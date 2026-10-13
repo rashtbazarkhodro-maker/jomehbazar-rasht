@@ -37,6 +37,15 @@
     font-family: inherit;
     font-size: 0.9rem;
   }
+  .search input:focus {
+    outline: none;
+    border-color: #1e3a5f;
+  }
+  .result-count {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    color: #666;
+  }
   .cars {
     padding: 12px;
     display: grid;
@@ -56,7 +65,10 @@
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: transform 0.15s;
   }
+  .card:active { transform: scale(0.98); }
   .card img {
     width: 100%;
     aspect-ratio: 4/3;
@@ -72,6 +84,12 @@
     font-weight: 700;
     color: #1e3a5f;
   }
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 0.9rem;
+  }
 </style>
 </head>
 <body>
@@ -81,9 +99,10 @@
 </header>
 
 <div class="search">
-  <input type="text" placeholder="جستجوی برند یا مدل...">
+  <input type="text" id="searchInput" placeholder="جستجوی برند یا مدل...">
 </div>
 
+<div class="result-count" id="resultCount"></div>
 <div class="cars" id="carsList"></div>
 
 <script>
@@ -104,19 +123,50 @@ function formatNum(n) {
 }
 
 const list = document.getElementById('carsList');
-sampleCars.forEach(car => {
-  const el = document.createElement('div');
-  el.className = 'card';
-  el.innerHTML = `
-    <img src="${car.img}" alt="${car.title}" loading="lazy">
-    <div class="card-body">
-      <h3>${car.title}</h3>
-      <div class="card-meta">${formatNum(car.year)} • ${formatNum(car.mileage)} کیلومتر</div>
-      <div class="card-price">${formatPrice(car.price)}</div>
-    </div>
-  `;
-  list.appendChild(el);
-});
+const searchInput = document.getElementById('searchInput');
+const resultCount = document.getElementById('resultCount');
+
+function renderCars(cars) {
+  list.innerHTML = '';
+  if (cars.length === 0) {
+    list.innerHTML = '<div class="empty">خودرویی با این مشخصات پیدا نشد 🔍</div>';
+    resultCount.textContent = '';
+    return;
+  }
+  resultCount.textContent = cars.length + ' خودرو پیدا شد';
+  cars.forEach(car => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.innerHTML = `
+      <img src="${car.img}" alt="${car.title}" loading="lazy">
+      <div class="card-body">
+        <h3>${car.title}</h3>
+        <div class="card-meta">${formatNum(car.year)} • ${formatNum(car.mileage)} کیلومتر</div>
+        <div class="card-price">${formatPrice(car.price)}</div>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+// فیلتر کردن
+function filterCars() {
+  const query = searchInput.value.trim().toLowerCase();
+  if (!query) {
+    renderCars(sampleCars);
+    return;
+  }
+  const filtered = sampleCars.filter(car =>
+    car.title.toLowerCase().includes(query)
+  );
+  renderCars(filtered);
+}
+
+// رویداد تایپ
+searchInput.addEventListener('input', filterCars);
+
+// رندر اولیه
+renderCars(sampleCars);
 </script>
 </body>
 </html>
