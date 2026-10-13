@@ -81,6 +81,7 @@
 <div class="container">
   <div class="card">
     <div class="message" id="message"></div>
+    <div id="debugLog" style="background:#222;color:#0f0;font-family:monospace;font-size:0.7rem;padding:8px;border-radius:6px;margin-bottom:12px;display:none;max-height:200px;overflow-y:auto;direction:ltr;text-align:left;"></div>
     <h2>اطلاعات خودرو</h2>
 
     <form id="carForm">
@@ -181,6 +182,14 @@ const previews = document.getElementById('previews');
 
 let uploadedImages = []; // { url, key }
 
+function logDebug(msg) {
+  const box = document.getElementById('debugLog');
+  box.style.display = 'block';
+  const time = new Date().toLocaleTimeString('fa-IR');
+  box.innerHTML += '[' + time + '] ' + msg + '<br>';
+  box.scrollTop = box.scrollHeight;
+}
+
 uploadArea.addEventListener('click', () => fileInput.click());
 
 fileInput.addEventListener('change', async (e) => {
@@ -204,6 +213,7 @@ fileInput.addEventListener('change', async (e) => {
     previews.appendChild(item);
 
     try {
+      logDebug('▶️ شروع پردازش...');
       // resize
       const compressed = await imageCompression(file, {
         maxWidthOrHeight: 1200,
@@ -212,15 +222,15 @@ fileInput.addEventListener('change', async (e) => {
         fileType: 'image/jpeg'
       });
 
-      console.log('Compressed size:', compressed.size, 'bytes, type:', compressed.type);
+      logDebug('📷 فایل اصلی: ' + file.name + ' — ' + (file.size/1024).toFixed(0) + 'KB — ' + file.type);
+      logDebug('🔄 پس از فشرده‌سازی: ' + (compressed.size/1024).toFixed(0) + 'KB — ' + compressed.type);
 
-      // آپلود
       const res = await fetch('/api/upload', {
         method: 'POST',
         headers: { 'Content-Type': compressed.type || 'image/jpeg' },
         body: compressed
       });
-      console.log('Upload response status:', res.status);
+      logDebug('📡 پاسخ سرور: HTTP ' + res.status);
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'خطا در سرور');
 
@@ -232,9 +242,8 @@ fileInput.addEventListener('change', async (e) => {
       console.error('Upload error:', err);
       item.classList.remove('uploading');
       item.classList.add('failed');
-      const msg = (err.message || 'خطا').slice(0, 30);
-      item.querySelector('.status').textContent = msg;
-      item.querySelector('.status').title = err.message || '';
+      item.querySelector('.status').textContent = 'خطا';
+      logDebug('❌ خطا: ' + (err.message || err));
     }
   }
 });
