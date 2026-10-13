@@ -90,6 +90,12 @@
     color: #999;
     font-size: 0.9rem;
   }
+  .loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 0.9rem;
+  }
 </style>
 </head>
 <body>
@@ -103,17 +109,14 @@
 </div>
 
 <div class="result-count" id="resultCount"></div>
-<div class="cars" id="carsList"></div>
+<div class="cars" id="carsList">
+  <div class="loading">در حال بارگذاری...</div>
+</div>
 
 <script>
-const sampleCars = [
-  { title: 'پژو ۲۰۷ اتوماتیک', year: 1402, mileage: 20000, price: 850000000, img: 'https://picsum.photos/seed/car1/400/300' },
-  { title: 'سمند LX', year: 1398, mileage: 90000, price: 420000000, img: 'https://picsum.photos/seed/car2/400/300' },
-  { title: 'دنا پلاس توربو', year: 1401, mileage: 35000, price: 780000000, img: 'https://picsum.photos/seed/car3/400/300' },
-  { title: 'شاهین G', year: 1402, mileage: 12000, price: 950000000, img: 'https://picsum.photos/seed/car4/400/300' },
-  { title: 'تیبا صندوقدار', year: 1397, mileage: 120000, price: 310000000, img: 'https://picsum.photos/seed/car5/400/300' },
-  { title: 'رانا پلاس', year: 1400, mileage: 55000, price: 560000000, img: 'https://picsum.photos/seed/car6/400/300' }
-];
+const API_URL = '/api/cars';
+
+let allCars = [];
 
 function formatPrice(n) {
   return n.toLocaleString('fa-IR') + ' تومان';
@@ -135,10 +138,19 @@ function renderCars(cars) {
   }
   resultCount.textContent = cars.length + ' خودرو پیدا شد';
   cars.forEach(car => {
+    // parse کردن آرایه عکس‌ها
+    let images = [];
+    try {
+      images = JSON.parse(car.images || '[]');
+    } catch (e) {
+      images = [];
+    }
+    const imgUrl = images[0] || 'https://via.placeholder.com/400x300?text=No+Image';
+
     const el = document.createElement('div');
     el.className = 'card';
     el.innerHTML = `
-      <img src="${car.img}" alt="${car.title}" loading="lazy">
+      <img src="${imgUrl}" alt="${car.title}" loading="lazy">
       <div class="card-body">
         <h3>${car.title}</h3>
         <div class="card-meta">${formatNum(car.year)} • ${formatNum(car.mileage)} کیلومتر</div>
@@ -149,24 +161,36 @@ function renderCars(cars) {
   });
 }
 
-// فیلتر کردن
 function filterCars() {
   const query = searchInput.value.trim().toLowerCase();
   if (!query) {
-    renderCars(sampleCars);
+    renderCars(allCars);
     return;
   }
-  const filtered = sampleCars.filter(car =>
-    car.title.toLowerCase().includes(query)
+  const filtered = allCars.filter(car =>
+    car.title.toLowerCase().includes(query) ||
+    (car.brand && car.brand.toLowerCase().includes(query)) ||
+    (car.model && car.model.toLowerCase().includes(query))
   );
   renderCars(filtered);
 }
 
-// رویداد تایپ
 searchInput.addEventListener('input', filterCars);
 
-// رندر اولیه
-renderCars(sampleCars);
+// بارگذاری از API
+async function loadCars() {
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    allCars = data.cars || [];
+    renderCars(allCars);
+  } catch (e) {
+    list.innerHTML = '<div class="empty">خطا در بارگذاری خودروها. لطفاً دوباره تلاش کنید.</div>';
+    console.error(e);
+  }
+}
+
+loadCars();
 </script>
 </body>
 </html>
