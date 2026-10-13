@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-
-<link rel="manifest" href="/manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="جمعه بازار">
-<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>جمعه بازار خودرو رشت</title>
@@ -19,18 +11,15 @@
     --primary: #1e3a5f;
     --primary-light: #2c5282;
     --accent: #ffb703;
-    --accent-dark: #e8a500;
     --success: #1e6b30;
-    --danger: #c33;
-    --bg: #f5f6f8;
-    --card-bg: #ffffff;
+    --bg: #ffffff;
     --text: #1a202c;
     --text-muted: #64748b;
     --border: #e5e7eb;
   }
   body {
     font-family: 'Vazirmatn', sans-serif;
-    background: var(--bg);
+    background: #f5f6f8;
     color: var(--text);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -40,7 +29,7 @@
   header {
     background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
     color: white;
-    padding: 24px 16px 20px;
+    padding: 16px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -51,64 +40,54 @@
     top: -50%; right: -50%;
     width: 200%; height: 200%;
     background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
-    animation: pulse 8s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 0.5; }
-    50% { transform: scale(1.1); opacity: 0.8; }
   }
   .header-content { position: relative; z-index: 2; }
   .logo-circle {
-    width: 56px; height: 56px;
+    width: 44px; height: 44px;
     background: var(--accent);
-    border-radius: 16px;
+    border-radius: 12px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-    box-shadow: 0 4px 12px rgba(255,183,3,0.3);
+    font-size: 1.4rem;
+    margin-bottom: 8px;
   }
   header h1 {
-    font-size: 1.25rem;
+    font-size: 1.05rem;
     font-weight: 800;
     margin-bottom: 2px;
-    letter-spacing: -0.3px;
   }
   header .tagline {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     opacity: 0.85;
-    font-weight: 500;
   }
   .nav-links {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin-top: 14px;
+    gap: 6px;
+    margin-top: 10px;
     position: relative;
     z-index: 2;
+    flex-wrap: wrap;
   }
   .nav-links a {
     color: white;
     text-decoration: none;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 20px;
+    padding: 7px 12px;
+    border-radius: 16px;
     background: rgba(255,255,255,0.12);
-    transition: all 0.2s;
-    backdrop-filter: blur(10px);
   }
-  .nav-links a:active { background: rgba(255,255,255,0.25); transform: scale(0.96); }
+  .nav-links a:active { background: rgba(255,255,255,0.25); }
   .nav-links a.btn-accent {
     background: var(--accent);
     color: var(--primary);
-    box-shadow: 0 2px 8px rgba(255,183,3,0.3);
   }
 
   /* ===== Search Bar ===== */
   .search-bar {
-    padding: 12px 16px;
+    padding: 10px 12px;
     background: white;
     position: sticky;
     top: 0;
@@ -117,7 +96,7 @@
     display: flex;
     gap: 8px;
     align-items: center;
-    max-width: 900px;
+    max-width: 700px;
     margin: 0 auto;
   }
   .search-input-wrap {
@@ -127,200 +106,171 @@
   .search-input-wrap::before {
     content: '🔍';
     position: absolute;
-    right: 14px; top: 50%;
+    right: 12px; top: 50%;
     transform: translateY(-50%);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     pointer-events: none;
   }
   .search-bar input {
     width: 100%;
-    padding: 12px 38px 12px 14px;
+    padding: 10px 34px 10px 12px;
     border: 1.5px solid var(--border);
-    border-radius: 12px;
+    border-radius: 10px;
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     background: #fafafa;
-    transition: all 0.2s;
   }
   .search-bar input:focus {
     outline: none;
     border-color: var(--primary);
     background: white;
-    box-shadow: 0 0 0 3px rgba(30,58,95,0.08);
   }
   .filter-toggle {
-    padding: 12px 16px;
+    padding: 10px 14px;
     background: var(--primary);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     position: relative;
-    transition: all 0.2s;
   }
-  .filter-toggle:active { transform: scale(0.96); }
   .filter-toggle.has-filter::after {
     content: '';
     position: absolute;
-    top: 6px; right: 6px;
-    width: 8px; height: 8px;
+    top: 5px; right: 5px;
+    width: 7px; height: 7px;
     background: var(--accent);
     border-radius: 50%;
-    box-shadow: 0 0 0 2px var(--primary);
-    animation: pulse-dot 2s infinite;
-  }
-  @keyframes pulse-dot {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
   }
 
   /* ===== Sort Bar ===== */
   .sort-bar {
-    padding: 10px 16px;
+    padding: 8px 12px;
     background: white;
     display: flex;
-    gap: 8px;
+    gap: 6px;
     overflow-x: auto;
     border-bottom: 1px solid var(--border);
     scrollbar-width: none;
-    max-width: 900px;
+    max-width: 700px;
     margin: 0 auto;
   }
   .sort-bar::-webkit-scrollbar { display: none; }
   .sort-chip {
-    padding: 8px 14px;
+    padding: 6px 12px;
     background: #f1f5f9;
-    border: 1.5px solid transparent;
-    border-radius: 20px;
+    border: 1px solid transparent;
+    border-radius: 16px;
     font-family: inherit;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 600;
     color: #475569;
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.2s;
   }
-  .sort-chip:active { transform: scale(0.95); }
   .sort-chip.active {
     background: var(--primary);
     color: white;
-    box-shadow: 0 2px 8px rgba(30,58,95,0.25);
   }
 
-  /* ===== Result Count ===== */
   .result-count {
-    padding: 12px 16px 4px;
-    font-size: 0.8rem;
+    padding: 10px 14px 4px;
+    font-size: 0.75rem;
     color: var(--text-muted);
-    max-width: 900px;
-    margin: 0 auto;
-    font-weight: 500;
-  }
-
-  /* ===== Cars Grid ===== */
-  .cars {
-    padding: 12px 16px 24px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 14px;
-    max-width: 900px;
+    max-width: 700px;
     margin: 0 auto;
   }
-  @media (min-width: 600px) { .cars { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 900px) { .cars { grid-template-columns: 1fr 1fr 1fr; } }
 
-  .card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  /* ===== Cars List ===== */
+  .cars-list {
+    background: white;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .car-row {
+    display: flex;
+    gap: 12px;
+    padding: 14px 12px;
+    border-bottom: 1px solid #f1f5f9;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
+    transition: background 0.15s;
+    align-items: flex-start;
   }
-  .card:active {
-    transform: scale(0.98);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  @media (min-width: 600px) {
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-  }
+  .car-row:active { background: #f8fafc; }
 
-  .card-image-wrap {
+  /* عکس سمت چپ */
+  .car-image {
     position: relative;
-    aspect-ratio: 4/3;
+    width: 130px;
+    height: 100px;
+    border-radius: 10px;
     overflow: hidden;
     background: #e5e7eb;
+    flex-shrink: 0;
   }
-  .card-image-wrap img {
+  .car-image img {
     width: 100%; height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.3s;
   }
-  .card:hover .card-image-wrap img { transform: scale(1.03); }
-
-  .badge {
+  .photo-count {
     position: absolute;
-    top: 10px; right: 10px;
-    padding: 5px 10px;
-    background: rgba(30,58,95,0.9);
+    top: 6px; left: 6px;
+    background: rgba(0,0,0,0.65);
     color: white;
     font-size: 0.68rem;
-    font-weight: 700;
-    border-radius: 8px;
-    backdrop-filter: blur(10px);
-  }
-  .badge.accent { background: rgba(255,183,3,0.95); color: var(--primary); }
-  .badge.success { background: rgba(30,107,48,0.95); }
-
-  .card-body { padding: 14px; }
-  .card-title {
-    font-size: 0.98rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: var(--text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .card-meta {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
-  .meta-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
-    background: #f1f5f9;
+    font-weight: 600;
+    padding: 3px 7px;
     border-radius: 6px;
-    font-size: 0.72rem;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    backdrop-filter: blur(6px);
+  }
+
+  /* اطلاعات سمت راست */
+  .car-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .car-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .car-mileage {
+    font-size: 0.82rem;
     color: #475569;
     font-weight: 500;
   }
-  .card-price {
-    font-size: 1.05rem;
+  .car-price {
+    font-size: 0.95rem;
     font-weight: 800;
     color: var(--primary);
-    padding-top: 8px;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    margin-top: 2px;
   }
-  .card-price .unit {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    font-weight: 500;
+  .car-desc {
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin-top: 2px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   .empty, .loading {
@@ -328,26 +278,9 @@
     padding: 60px 20px;
     color: var(--text-muted);
     font-size: 0.9rem;
-    grid-column: 1 / -1;
+    background: white;
   }
-  .empty .icon {
-    font-size: 3rem;
-    display: block;
-    margin-bottom: 12px;
-    opacity: 0.5;
-  }
-  .loading::after {
-    content: '';
-    display: inline-block;
-    width: 16px; height: 16px;
-    border: 2px solid var(--border);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-right: 8px;
-    vertical-align: middle;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty .icon { font-size: 3rem; display: block; margin-bottom: 12px; opacity: 0.5; }
 
   /* ===== Filter Panel ===== */
   .filter-panel {
@@ -357,21 +290,19 @@
     border-radius: 20px 20px 0 0;
     padding: 20px;
     z-index: 1000;
-    transition: bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: bottom 0.35s ease-out;
     max-height: 85vh;
     overflow-y: auto;
     box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
   }
   .filter-panel.open { bottom: 0; }
   .filter-overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(0,0,0,0.5);
     z-index: 999;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s;
-    backdrop-filter: blur(2px);
   }
   .filter-overlay.open { opacity: 1; pointer-events: auto; }
 
@@ -382,9 +313,7 @@
     margin: 0 auto 16px;
   }
   .filter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 20px;
   }
   .filter-header h3 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
@@ -396,11 +325,8 @@
     color: #64748b;
     width: 32px; height: 32px;
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
   }
-
   .filter-group { margin-bottom: 18px; }
   .filter-group label {
     display: block;
@@ -409,11 +335,7 @@
     color: #334155;
     margin-bottom: 10px;
   }
-  .range-inputs {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
+  .range-inputs { display: flex; gap: 8px; align-items: center; }
   .range-inputs input {
     flex: 1;
     padding: 12px;
@@ -424,11 +346,7 @@
     text-align: center;
     background: #fafafa;
   }
-  .range-inputs input:focus {
-    outline: none;
-    border-color: var(--primary);
-    background: white;
-  }
+  .range-inputs input:focus { outline: none; border-color: var(--primary); background: white; }
   .range-inputs span { color: #94a3b8; font-size: 0.8rem; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip {
@@ -441,17 +359,10 @@
     font-weight: 600;
     color: #475569;
     cursor: pointer;
-    transition: all 0.2s;
   }
-  .chip.active {
-    background: var(--primary);
-    color: white;
-    box-shadow: 0 2px 8px rgba(30,58,95,0.25);
-  }
-
+  .chip.active { background: var(--primary); color: white; }
   .filter-actions {
-    display: flex;
-    gap: 10px;
+    display: flex; gap: 10px;
     margin-top: 20px;
     padding-top: 16px;
     border-top: 1px solid var(--border);
@@ -479,7 +390,6 @@
     font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(30,58,95,0.25);
   }
 </style>
 </head>
@@ -515,8 +425,8 @@
 </div>
 
 <div class="result-count" id="resultCount"></div>
-<div class="cars" id="carsList">
-  <div class="loading">در حال بارگذاری</div>
+<div class="cars-list" id="carsList">
+  <div class="loading">در حال بارگذاری...</div>
 </div>
 
 <div class="filter-overlay" id="filterOverlay"></div>
@@ -582,10 +492,7 @@ const filters = {
 
 let currentSort = 'newest';
 
-function formatPrice(n) {
-  return (n || 0).toLocaleString('fa-IR');
-}
-function formatNum(n) {
+function faNum(n) {
   return (n || 0).toLocaleString('fa-IR');
 }
 
@@ -608,15 +515,6 @@ function sortCars(cars) {
   }
 }
 
-function getBadge(car) {
-  const now = Date.now();
-  const created = car.created_at ? new Date(car.created_at).getTime() : 0;
-  const daysOld = (now - created) / (1000 * 60 * 60 * 24);
-  if (daysOld < 3) return { text: '🆕 جدید', cls: 'accent' };
-  if (car.gearbox === 'اتوماتیک') return { text: 'اتوماتیک', cls: '' };
-  return null;
-}
-
 function renderCars(cars) {
   list.innerHTML = '';
   if (cars.length === 0) {
@@ -624,31 +522,26 @@ function renderCars(cars) {
     resultCount.textContent = '';
     return;
   }
-  resultCount.textContent = '🔹 ' + cars.length + ' خودرو پیدا شد';
+  resultCount.textContent = faNum(cars.length) + ' آگهی';
 
   cars.forEach(car => {
     let images = [];
     try { images = JSON.parse(car.images || '[]'); } catch (e) {}
     const imgUrl = images[0] || 'https://via.placeholder.com/400x300?text=No+Image';
-    const badge = getBadge(car);
+    const imgCount = images.length || 0;
 
     const el = document.createElement('div');
-    el.className = 'card';
+    el.className = 'car-row';
     el.innerHTML = `
-      <div class="card-image-wrap">
+      <div class="car-image">
         <img src="${imgUrl}" alt="${car.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
-        ${badge ? `<div class="badge ${badge.cls}">${badge.text}</div>` : ''}
+        ${imgCount > 0 ? `<div class="photo-count">📷 ${faNum(imgCount)}</div>` : ''}
       </div>
-      <div class="card-body">
-        <div class="card-title">${car.title}</div>
-        <div class="card-meta">
-          <span class="meta-chip">📅 ${formatNum(car.year)}</span>
-          <span class="meta-chip">🛣️ ${formatNum(car.mileage)} کم</span>
-          ${car.gearbox ? `<span class="meta-chip">⚙️ ${car.gearbox}</span>` : ''}
-        </div>
-        <div class="card-price">
-          <span>${formatPrice(car.price)} <span class="unit">تومان</span></span>
-        </div>
+      <div class="car-info">
+        <div class="car-title">${car.title}</div>
+        <div class="car-mileage">${faNum(car.mileage)} کیلومتر</div>
+        <div class="car-price">${faNum(car.price)} تومان</div>
+        ${car.description ? `<div class="car-desc">${car.description}</div>` : ''}
       </div>
     `;
     el.addEventListener('click', () => {
@@ -747,7 +640,6 @@ document.querySelectorAll('#sortBar .sort-chip').forEach(chip => {
   });
 });
 
-// بارگذاری تنظیمات هدر
 async function loadSettings() {
   try {
     const res = await fetch('/api/settings');
@@ -765,7 +657,7 @@ async function loadCars() {
     allCars = data.cars || [];
     applyFilters();
   } catch (e) {
-    list.innerHTML = '<div class="empty"><span class="icon">⚠️</span>خطا در بارگذاری خودروها</div>';
+    list.innerHTML = '<div class="empty"><span class="icon">⚠️</span>خطا در بارگذاری</div>';
     console.error(e);
   }
 }
@@ -773,16 +665,5 @@ async function loadCars() {
 loadSettings();
 loadCars();
 </script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('SW registered:', reg))
-        .catch(err => console.log('SW error:', err));
-    });
-  }
-</script>
-
 </body>
 </html>
