@@ -18,8 +18,8 @@
   ],
   "vars": {
     "ADMIN_PASSWORD": "jomehbazar1404",
-    "B2_KEY_ID": "0053528161297f0000000001",
-    "B2_APP_KEY": "K005qzIgZt0XbSmZOcb29hhw4D7EIRw",
+    "B2_KEY_ID": "0053528161297f00000000002",
+    "B2_APP_KEY": "K005ecBsZhRL5y8Z1ugb/qYbTcH+KhA",
     "B2_BUCKET": "jomehbazar-images",
     "B2_ENDPOINT": "s3.us-east-005.backblazeb2.com",
     "B2_REGION": "us-east-005"
