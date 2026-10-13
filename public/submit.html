@@ -214,20 +214,32 @@ fileInput.addEventListener('change', async (e) => {
 
     try {
       logDebug('▶️ شروع پردازش...');
-      // resize
-      const compressed = await imageCompression(file, {
-        maxWidthOrHeight: 1200,
-        maxSizeMB: 0.4,
-        useWebWorker: true,
-        fileType: 'image/jpeg'
-      });
+      logDebug('📷 فایل اصلی: ' + file.name + ' — ' + (file.size/1024).toFixed(0) + 'KB — ' + (file.type || '?'));
 
-      logDebug('📷 فایل اصلی: ' + file.name + ' — ' + (file.size/1024).toFixed(0) + 'KB — ' + file.type);
-      logDebug('🔄 پس از فشرده‌سازی: ' + (compressed.size/1024).toFixed(0) + 'KB — ' + compressed.type);
+      // تلاش برای فشرده‌سازی — اگه نشد، فایل اصلی
+      let compressed = file;
+      try {
+        compressed = await imageCompression(file, {
+          maxWidthOrHeight: 1200,
+          maxSizeMB: 0.4,
+          useWebWorker: false,
+          fileType: 'image/jpeg'
+        });
+        logDebug('🔄 فشرده شد: ' + (compressed.size/1024).toFixed(0) + 'KB');
+      } catch (compErr) {
+        const reason = compErr && compErr.type ? compErr.type : (compErr && compErr.message ? compErr.message : 'ناشناخته');
+        logDebug('⚠️ فشرده‌سازی نشد (' + reason + ') — از فایل اصلی استفاده می‌کنم');
+        compressed = file;
+      }
+
+      // اگه فایل اصلی > ۵MB → خطا
+      if (compressed.size > 5 * 1024 * 1024) {
+        throw new Error('حجم عکس بیش از ۵ مگابایت است');
+      }
 
       const res = await fetch('/api/upload', {
         method: 'POST',
-        headers: { 'Content-Type': compressed.type || 'image/jpeg' },
+        headers: { 'Content-Type': compressed.type || file.type || 'image/jpeg' },
         body: compressed
       });
       logDebug('📡 پاسخ سرور: HTTP ' + res.status);
@@ -238,12 +250,14 @@ fileInput.addEventListener('change', async (e) => {
       item.classList.remove('uploading');
       item.classList.add('done');
       item.querySelector('.status').textContent = '✓ آماده';
+      logDebug('✅ آپلود موفق');
     } catch (err) {
       console.error('Upload error:', err);
       item.classList.remove('uploading');
       item.classList.add('failed');
       item.querySelector('.status').textContent = 'خطا';
-      logDebug('❌ خطا: ' + (err.message || err));
+      const msg = err && err.message ? err.message : (err && err.type ? err.type : String(err));
+      logDebug('❌ خطا: ' + msg);
     }
   }
 });
