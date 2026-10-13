@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ثبت آگهی | جمعه بازار خودرو رشت</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: #f5f6f8;
+    color: #222;
+    line-height: 1.6;
+  }
+  header {
+    background: #1e3a5f;
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header a { color: white; text-decoration: none; font-size: 1.3rem; }
+  header h1 { font-size: 1rem; }
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .field {
+    margin-bottom: 14px;
+  }
+  .field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+  }
+  .field label .req { color: #c33; }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: #fafafa;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: #1e3a5f;
+    background: white;
+  }
+  .field textarea { resize: vertical; min-height: 80px; }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .hint {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 4px;
+  }
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: #1e3a5f;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .btn-submit:disabled { opacity: 0.5; cursor: wait; }
+  .message {
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    font-size: 0.9rem;
+    display: none;
+  }
+  .message.success {
+    background: #e6f4ea;
+    color: #1e6b30;
+    border: 1px solid #b7e1c1;
+    display: block;
+  }
+  .message.error {
+    background: #fdecea;
+    color: #a02020;
+    border: 1px solid #f5c2c0;
+    display: block;
+  }
+  h2 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+    color: #1e3a5f;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/">→</a>
+  <h1>ثبت آگهی خودرو</h1>
+</header>
+
+<div class="container">
+  <div class="card">
+    <div class="message" id="message"></div>
+
+    <h2>اطلاعات خودرو</h2>
+
+    <form id="carForm">
+      <div class="field">
+        <label>عنوان آگهی <span class="req">*</span></label>
+        <input type="text" name="title" required placeholder="مثال: پژو ۲۰۷ اتوماتیک">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>برند</label>
+          <input type="text" name="brand" placeholder="پژو">
+        </div>
+        <div class="field">
+          <label>مدل</label>
+          <input type="text" name="model" placeholder="207">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>سال ساخت <span class="req">*</span></label>
+          <input type="number" name="year" required min="1370" max="1410" placeholder="1402">
+        </div>
+        <div class="field">
+          <label>کارکرد (کیلومتر) <span class="req">*</span></label>
+          <input type="number" name="mileage" required min="0" placeholder="20000">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>قیمت (تومان) <span class="req">*</span></label>
+        <input type="number" name="price" required min="0" placeholder="850000000">
+        <div class="hint">قیمت به تومان، بدون کاما</div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>رنگ</label>
+          <input type="text" name="color" placeholder="سفید">
+        </div>
+        <div class="field">
+          <label>گیربکس</label>
+          <select name="gearbox">
+            <option value="">انتخاب کنید</option>
+            <option value="دستی">دستی</option>
+            <option value="اتوماتیک">اتوماتیک</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>سوخت</label>
+        <select name="fuel">
+          <option value="">انتخاب کنید</option>
+          <option value="بنزین">بنزین</option>
+          <option value="دیزل">دیزل</option>
+          <option value="دوگانه‌سوز">دوگانه‌سوز</option>
+          <option value="برقی">برقی</option>
+          <option value="هیبرید">هیبرید</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>شماره تماس <span class="req">*</span></label>
+        <input type="tel" name="phone" required placeholder="09123456789" pattern="09[0-9]{9}">
+        <div class="hint">۱۱ رقم، شروع با ۰۹</div>
+      </div>
+
+      <div class="field">
+        <label>توضیحات</label>
+        <textarea name="description" placeholder="وضعیت بدنه، بیمه، سایر جزئیات..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">ثبت آگهی</button>
+    </form>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('carForm');
+const btn = document.getElementById('submitBtn');
+const message = document.getElementById('message');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  message.className = 'message';
+  message.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'در حال ثبت...';
+
+  const formData = new FormData(form);
+  const data = {};
+  for (const [key, value] of formData.entries()) {
+    data[key] = value.trim();
+  }
+  data.year = parseInt(data.year);
+  data.mileage = parseInt(data.mileage);
+  data.price = parseInt(data.price);
+  data.images = [];
+
+  try {
+    const res = await fetch('/api/cars', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+
+    if (res.ok && result.success) {
+      message.className = 'message success';
+      message.textContent = '✅ ' + result.message + ' (شناسه: ' + result.id + ')';
+      form.reset();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      message.className = 'message error';
+      message.textContent = '❌ ' + (result.error || 'خطا در ثبت آگهی');
+    }
+  } catch (err) {
+    message.className = 'message error';
+    message.textContent = '❌ خطا در ارتباط با سرور';
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'ثبت آگهی';
+  }
+});
+</script>
+</body>
+</html>
