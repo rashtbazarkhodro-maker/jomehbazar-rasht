@@ -157,6 +157,9 @@ function renderCars(cars) {
         <div class="card-price">${formatPrice(car.price)}</div>
       </div>
     `;
+    el.addEventListener('click', () => {
+      window.location.href = 'car.html?id=' + car.id;
+    });
     list.appendChild(el);
   });
 }
