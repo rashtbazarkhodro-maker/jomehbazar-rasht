@@ -4,52 +4,101 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>جمعه بازار خودرو رشت</title>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #1e3a5f;
+    --primary-light: #2c5282;
+    --accent: #ffb703;
+    --accent-dark: #e8a500;
+    --success: #1e6b30;
+    --danger: #c33;
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --text: #1a202c;
+    --text-muted: #64748b;
+    --border: #e5e7eb;
+  }
   body {
     font-family: 'Vazirmatn', sans-serif;
-    background: #f5f6f8;
-    color: #222;
+    background: var(--bg);
+    color: var(--text);
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
+
+  /* ===== Header ===== */
   header {
-    background: #1e3a5f;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
     color: white;
-    padding: 16px;
+    padding: 24px 16px 20px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
   }
-  header h1 { font-size: 1.1rem; }
-  header p { font-size: 0.8rem; opacity: 0.8; margin-top: 4px; }
-  .btn-submit-link {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 18px;
-    background: #ffb703;
-    color: #1e3a5f;
-    text-decoration: none;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 700;
+  header::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    animation: pulse 8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+  .header-content { position: relative; z-index: 2; }
+  .logo-circle {
+    width: 56px; height: 56px;
+    background: var(--accent);
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(255,183,3,0.3);
+  }
+  header h1 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 2px;
+    letter-spacing: -0.3px;
+  }
+  header .tagline {
+    font-size: 0.78rem;
+    opacity: 0.85;
+    font-weight: 500;
   }
   .nav-links {
     display: flex;
     justify-content: center;
-    gap: 16px;
-    margin-top: 10px;
-    font-size: 0.8rem;
+    gap: 8px;
+    margin-top: 14px;
+    position: relative;
+    z-index: 2;
   }
   .nav-links a {
     color: white;
     text-decoration: none;
-    opacity: 0.8;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: opacity 0.15s;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.12);
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
   }
-  .nav-links a:hover { opacity: 1; text-decoration: underline; }
+  .nav-links a:active { background: rgba(255,255,255,0.25); transform: scale(0.96); }
+  .nav-links a.btn-accent {
+    background: var(--accent);
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(255,183,3,0.3);
+  }
 
-  /* نوار جستجو + دکمه فیلتر */
+  /* ===== Search Bar ===== */
   .search-bar {
     padding: 12px 16px;
     background: white;
@@ -60,97 +109,297 @@
     display: flex;
     gap: 8px;
     align-items: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .search-input-wrap {
+    flex: 1;
+    position: relative;
+  }
+  .search-input-wrap::before {
+    content: '🔍';
+    position: absolute;
+    right: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    pointer-events: none;
   }
   .search-bar input {
-    flex: 1;
-    padding: 10px 14px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    width: 100%;
+    padding: 12px 38px 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
     font-family: inherit;
     font-size: 0.9rem;
+    background: #fafafa;
+    transition: all 0.2s;
   }
   .search-bar input:focus {
     outline: none;
-    border-color: #1e3a5f;
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(30,58,95,0.08);
   }
   .filter-toggle {
-    padding: 10px 14px;
-    background: #1e3a5f;
+    padding: 12px 16px;
+    background: var(--primary);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     position: relative;
+    transition: all 0.2s;
   }
+  .filter-toggle:active { transform: scale(0.96); }
   .filter-toggle.has-filter::after {
     content: '';
     position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 8px;
-    height: 8px;
-    background: #ffb703;
+    top: 6px; right: 6px;
+    width: 8px; height: 8px;
+    background: var(--accent);
     border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--primary);
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
   }
 
-  /* پنل فیلتر (روی موبایل، پایین باز می‌شه) */
+  /* ===== Sort Bar ===== */
+  .sort-bar {
+    padding: 10px 16px;
+    background: white;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .sort-bar::-webkit-scrollbar { display: none; }
+  .sort-chip {
+    padding: 8px 14px;
+    background: #f1f5f9;
+    border: 1.5px solid transparent;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .sort-chip:active { transform: scale(0.95); }
+  .sort-chip.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(30,58,95,0.25);
+  }
+
+  /* ===== Result Count ===== */
+  .result-count {
+    padding: 12px 16px 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    max-width: 900px;
+    margin: 0 auto;
+    font-weight: 500;
+  }
+
+  /* ===== Cars Grid ===== */
+  .cars {
+    padding: 12px 16px 24px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  @media (min-width: 600px) { .cars { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 900px) { .cars { grid-template-columns: 1fr 1fr 1fr; } }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  .card:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  @media (min-width: 600px) {
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+  }
+
+  .card-image-wrap {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: #e5e7eb;
+  }
+  .card-image-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+  }
+  .card:hover .card-image-wrap img { transform: scale(1.03); }
+
+  .badge {
+    position: absolute;
+    top: 10px; right: 10px;
+    padding: 5px 10px;
+    background: rgba(30,58,95,0.9);
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+  }
+  .badge.accent { background: rgba(255,183,3,0.95); color: var(--primary); }
+  .badge.success { background: rgba(30,107,48,0.95); }
+
+  .card-body { padding: 14px; }
+  .card-title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .card-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: #f1f5f9;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    color: #475569;
+    font-weight: 500;
+  }
+  .card-price {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--primary);
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-price .unit {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .empty, .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    grid-column: 1 / -1;
+  }
+  .empty .icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+  .loading::after {
+    content: '';
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== Filter Panel ===== */
   .filter-panel {
     position: fixed;
-    bottom: -100%;
-    left: 0;
-    right: 0;
+    bottom: -100%; left: 0; right: 0;
     background: white;
-    border-radius: 16px 16px 0 0;
+    border-radius: 20px 20px 0 0;
     padding: 20px;
     z-index: 1000;
-    transition: bottom 0.3s;
+    transition: bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     max-height: 85vh;
     overflow-y: auto;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
   }
   .filter-panel.open { bottom: 0; }
   .filter-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0,0,0,0.5);
     z-index: 999;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s;
+    backdrop-filter: blur(2px);
   }
   .filter-overlay.open { opacity: 1; pointer-events: auto; }
 
+  .filter-handle {
+    width: 40px; height: 4px;
+    background: #cbd5e1;
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
   .filter-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
   }
-  .filter-header h3 { font-size: 1rem; color: #1e3a5f; }
+  .filter-header h3 { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
   .filter-close {
-    background: none;
+    background: #f1f5f9;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    color: #999;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    line-height: 1;
+    color: #64748b;
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .filter-group { margin-bottom: 16px; }
+  .filter-group { margin-bottom: 18px; }
   .filter-group label {
     display: block;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #555;
-    margin-bottom: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 10px;
   }
   .range-inputs {
     display: flex;
@@ -159,38 +408,37 @@
   }
   .range-inputs input {
     flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    padding: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     text-align: center;
+    background: #fafafa;
   }
-  .range-inputs span {
-    color: #999;
-    font-size: 0.8rem;
+  .range-inputs input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
   }
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
+  .range-inputs span { color: #94a3b8; font-size: 0.8rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip {
-    padding: 8px 14px;
-    background: #f0f4f9;
-    border: 1px solid #e0e5ec;
+    padding: 9px 16px;
+    background: #f1f5f9;
+    border: 1.5px solid transparent;
     border-radius: 20px;
     font-family: inherit;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    color: #555;
+    color: #475569;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.2s;
   }
   .chip.active {
-    background: #1e3a5f;
+    background: var(--primary);
     color: white;
-    border-color: #1e3a5f;
+    box-shadow: 0 2px 8px rgba(30,58,95,0.25);
   }
 
   .filter-actions {
@@ -198,15 +446,15 @@
     gap: 10px;
     margin-top: 20px;
     padding-top: 16px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border);
   }
   .btn-reset {
     flex: 1;
-    padding: 12px;
-    background: #f0f0f0;
-    color: #555;
+    padding: 14px;
+    background: #f1f5f9;
+    color: #475569;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-family: inherit;
     font-size: 0.9rem;
     font-weight: 600;
@@ -214,127 +462,57 @@
   }
   .btn-apply {
     flex: 2;
-    padding: 12px;
-    background: #1e3a5f;
+    padding: 14px;
+    background: var(--primary);
     color: white;
     border: none;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  /* نتیجه */
-  .sort-bar {
-    padding: 8px 16px;
-    background: white;
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    border-bottom: 1px solid #eee;
-    scrollbar-width: none;
-  }
-  .sort-bar::-webkit-scrollbar { display: none; }
-  .sort-chip {
-    padding: 7px 14px;
-    background: #f0f4f9;
-    border: 1px solid #e0e5ec;
-    border-radius: 20px;
-    font-family: inherit;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #555;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.15s;
-  }
-  .sort-chip.active {
-    background: #1e3a5f;
-    color: white;
-    border-color: #1e3a5f;
-  }
-  .result-count {
-    padding: 8px 16px;
-    font-size: 0.8rem;
-    color: #666;
-  }
-  .cars {
-    padding: 12px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-  @media (min-width: 600px) { .cars { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 900px) { .cars { grid-template-columns: 1fr 1fr 1fr; } }
-
-  .card {
-    background: white;
     border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
-  .card:active { transform: scale(0.98); }
-  .card img {
-    width: 100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    background: #eee;
-    display: block;
-  }
-  .card-body { padding: 12px; }
-  .card-body h3 { font-size: 1rem; margin-bottom: 6px; }
-  .card-meta { font-size: 0.8rem; color: #666; margin-bottom: 6px; }
-  .card-price {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #1e3a5f;
-  }
-  .empty, .loading {
-    text-align: center;
-    padding: 40px 20px;
-    color: #999;
+    font-family: inherit;
     font-size: 0.9rem;
-    grid-column: 1 / -1;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(30,58,95,0.25);
   }
 </style>
 </head>
 <body>
+
 <header>
-  <h1>جمعه بازار خودرو رشت</h1>
-  <p>نمایشگاه خودروهای سبک و سنگین</p>
-  <a href="submit.html" class="btn-submit-link">+ ثبت آگهی</a>
+  <div class="header-content">
+    <div class="logo-circle">🚗</div>
+    <h1 id="headerTitle">جمعه بازار خودرو رشت</h1>
+    <p class="tagline" id="headerTagline">نمایشگاه خودروهای سبک و سنگین</p>
+  </div>
   <div class="nav-links">
-    <a href="/">خانه</a>
-    <a href="about.html">درباره ما</a>
+    <a href="/">🏠 خانه</a>
+    <a href="about.html">ℹ️ درباره ما</a>
+    <a href="submit.html" class="btn-accent">+ ثبت آگهی</a>
   </div>
 </header>
 
 <div class="search-bar">
-  <input type="text" id="searchInput" placeholder="جستجوی برند یا مدل...">
-  <button class="filter-toggle" id="filterToggle">⚙️ فیلتر</button>
+  <div class="search-input-wrap">
+    <input type="text" id="searchInput" placeholder="جستجوی برند یا مدل...">
+  </div>
+  <button class="filter-toggle" id="filterToggle">⚙️</button>
 </div>
 
 <div class="sort-bar" id="sortBar">
   <button class="sort-chip active" data-sort="newest">🆕 جدیدترین</button>
   <button class="sort-chip" data-sort="cheapest">💰 ارزان‌ترین</button>
   <button class="sort-chip" data-sort="expensive">💎 گران‌ترین</button>
-  <button class="sort-chip" data-sort="lowMileage">🛣️ کم‌کارکردترین</button>
+  <button class="sort-chip" data-sort="lowMileage">🛣️ کم‌کارکرد</button>
   <button class="sort-chip" data-sort="newestYear">📅 جدیدترین سال</button>
 </div>
 
 <div class="result-count" id="resultCount"></div>
 <div class="cars" id="carsList">
-  <div class="loading">در حال بارگذاری...</div>
+  <div class="loading">در حال بارگذاری</div>
 </div>
 
-<!-- پنل فیلتر -->
 <div class="filter-overlay" id="filterOverlay"></div>
 <div class="filter-panel" id="filterPanel">
+  <div class="filter-handle"></div>
   <div class="filter-header">
     <h3>فیلترها</h3>
     <button class="filter-close" id="filterClose">×</button>
@@ -388,36 +566,15 @@ const API_URL = '/api/cars';
 let allCars = [];
 
 const filters = {
-  priceMin: null,
-  priceMax: null,
-  yearMin: null,
-  yearMax: null,
-  gearbox: null,
-  fuel: null
+  priceMin: null, priceMax: null,
+  yearMin: null, yearMax: null,
+  gearbox: null, fuel: null
 };
 
 let currentSort = 'newest';
 
-function sortCars(cars) {
-  const sorted = cars.slice();
-  switch (currentSort) {
-    case 'newest':
-      return sorted.sort((a, b) => b.id - a.id);
-    case 'cheapest':
-      return sorted.sort((a, b) => a.price - b.price);
-    case 'expensive':
-      return sorted.sort((a, b) => b.price - a.price);
-    case 'lowMileage':
-      return sorted.sort((a, b) => a.mileage - b.mileage);
-    case 'newestYear':
-      return sorted.sort((a, b) => b.year - a.year);
-    default:
-      return sorted;
-  }
-}
-
 function formatPrice(n) {
-  return (n || 0).toLocaleString('fa-IR') + ' تومان';
+  return (n || 0).toLocaleString('fa-IR');
 }
 function formatNum(n) {
   return (n || 0).toLocaleString('fa-IR');
@@ -426,32 +583,63 @@ function formatNum(n) {
 const list = document.getElementById('carsList');
 const searchInput = document.getElementById('searchInput');
 const resultCount = document.getElementById('resultCount');
-
 const filterPanel = document.getElementById('filterPanel');
 const filterOverlay = document.getElementById('filterOverlay');
 const filterToggle = document.getElementById('filterToggle');
 
+function sortCars(cars) {
+  const sorted = cars.slice();
+  switch (currentSort) {
+    case 'newest': return sorted.sort((a, b) => b.id - a.id);
+    case 'cheapest': return sorted.sort((a, b) => a.price - b.price);
+    case 'expensive': return sorted.sort((a, b) => b.price - a.price);
+    case 'lowMileage': return sorted.sort((a, b) => a.mileage - b.mileage);
+    case 'newestYear': return sorted.sort((a, b) => b.year - a.year);
+    default: return sorted;
+  }
+}
+
+function getBadge(car) {
+  const now = Date.now();
+  const created = car.created_at ? new Date(car.created_at).getTime() : 0;
+  const daysOld = (now - created) / (1000 * 60 * 60 * 24);
+  if (daysOld < 3) return { text: '🆕 جدید', cls: 'accent' };
+  if (car.gearbox === 'اتوماتیک') return { text: 'اتوماتیک', cls: '' };
+  return null;
+}
+
 function renderCars(cars) {
   list.innerHTML = '';
   if (cars.length === 0) {
-    list.innerHTML = '<div class="empty">خودرویی با این مشخصات پیدا نشد 🔍</div>';
+    list.innerHTML = '<div class="empty"><span class="icon">🔍</span>خودرویی با این مشخصات پیدا نشد</div>';
     resultCount.textContent = '';
     return;
   }
-  resultCount.textContent = cars.length + ' خودرو پیدا شد';
+  resultCount.textContent = '🔹 ' + cars.length + ' خودرو پیدا شد';
+
   cars.forEach(car => {
     let images = [];
     try { images = JSON.parse(car.images || '[]'); } catch (e) {}
     const imgUrl = images[0] || 'https://via.placeholder.com/400x300?text=No+Image';
+    const badge = getBadge(car);
 
     const el = document.createElement('div');
     el.className = 'card';
     el.innerHTML = `
-      <img src="${imgUrl}" alt="${car.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
+      <div class="card-image-wrap">
+        <img src="${imgUrl}" alt="${car.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
+        ${badge ? `<div class="badge ${badge.cls}">${badge.text}</div>` : ''}
+      </div>
       <div class="card-body">
-        <h3>${car.title}</h3>
-        <div class="card-meta">${formatNum(car.year)} • ${formatNum(car.mileage)} کیلومتر${car.gearbox ? ' • ' + car.gearbox : ''}</div>
-        <div class="card-price">${formatPrice(car.price)}</div>
+        <div class="card-title">${car.title}</div>
+        <div class="card-meta">
+          <span class="meta-chip">📅 ${formatNum(car.year)}</span>
+          <span class="meta-chip">🛣️ ${formatNum(car.mileage)} کم</span>
+          ${car.gearbox ? `<span class="meta-chip">⚙️ ${car.gearbox}</span>` : ''}
+        </div>
+        <div class="card-price">
+          <span>${formatPrice(car.price)} <span class="unit">تومان</span></span>
+        </div>
       </div>
     `;
     el.addEventListener('click', () => {
@@ -465,7 +653,6 @@ function applyFilters() {
   const query = searchInput.value.trim().toLowerCase();
   let filtered = allCars.slice();
 
-  // جستجو
   if (query) {
     filtered = filtered.filter(car =>
       (car.title && car.title.toLowerCase().includes(query)) ||
@@ -473,34 +660,22 @@ function applyFilters() {
       (car.model && car.model.toLowerCase().includes(query))
     );
   }
-
-  // قیمت
   if (filters.priceMin != null) filtered = filtered.filter(c => c.price >= filters.priceMin);
   if (filters.priceMax != null) filtered = filtered.filter(c => c.price <= filters.priceMax);
-
-  // سال
   if (filters.yearMin != null) filtered = filtered.filter(c => c.year >= filters.yearMin);
   if (filters.yearMax != null) filtered = filtered.filter(c => c.year <= filters.yearMax);
-
-  // گیربکس
   if (filters.gearbox) filtered = filtered.filter(c => c.gearbox === filters.gearbox);
-
-  // سوخت
   if (filters.fuel) filtered = filtered.filter(c => c.fuel === filters.fuel);
 
-  // مرتب‌سازی
   filtered = sortCars(filtered);
-
   renderCars(filtered);
 
-  // آپدیت نشانگر فیلتر فعال
   const hasFilter = filters.priceMin != null || filters.priceMax != null ||
                     filters.yearMin != null || filters.yearMax != null ||
                     filters.gearbox || filters.fuel;
   filterToggle.classList.toggle('has-filter', hasFilter);
 }
 
-// باز/بسته کردن پنل
 filterToggle.addEventListener('click', () => {
   filterPanel.classList.add('open');
   filterOverlay.classList.add('open');
@@ -512,7 +687,6 @@ function closeFilter() {
   filterOverlay.classList.remove('open');
 }
 
-// چیپ‌ها
 function setupChips(containerId, filterKey) {
   const container = document.getElementById(containerId);
   container.querySelectorAll('.chip').forEach(chip => {
@@ -532,39 +706,29 @@ function setupChips(containerId, filterKey) {
 setupChips('gearboxChips', 'gearbox');
 setupChips('fuelChips', 'fuel');
 
-// اعمال فیلتر
 document.getElementById('filterApply').addEventListener('click', () => {
   filters.priceMin = document.getElementById('priceMin').value ? parseInt(document.getElementById('priceMin').value) : null;
   filters.priceMax = document.getElementById('priceMax').value ? parseInt(document.getElementById('priceMax').value) : null;
   filters.yearMin = document.getElementById('yearMin').value ? parseInt(document.getElementById('yearMin').value) : null;
   filters.yearMax = document.getElementById('yearMax').value ? parseInt(document.getElementById('yearMax').value) : null;
-
   applyFilters();
   closeFilter();
 });
 
-// پاک کردن
 document.getElementById('filterReset').addEventListener('click', () => {
-  filters.priceMin = null;
-  filters.priceMax = null;
-  filters.yearMin = null;
-  filters.yearMax = null;
-  filters.gearbox = null;
-  filters.fuel = null;
-
+  filters.priceMin = null; filters.priceMax = null;
+  filters.yearMin = null; filters.yearMax = null;
+  filters.gearbox = null; filters.fuel = null;
   document.getElementById('priceMin').value = '';
   document.getElementById('priceMax').value = '';
   document.getElementById('yearMin').value = '';
   document.getElementById('yearMax').value = '';
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-
   applyFilters();
 });
 
-// جستجو
 searchInput.addEventListener('input', applyFilters);
 
-// دکمه‌های مرتب‌سازی
 document.querySelectorAll('#sortBar .sort-chip').forEach(chip => {
   chip.addEventListener('click', () => {
     document.querySelectorAll('#sortBar .sort-chip').forEach(c => c.classList.remove('active'));
@@ -574,7 +738,17 @@ document.querySelectorAll('#sortBar .sort-chip').forEach(chip => {
   });
 });
 
-// بارگذاری
+// بارگذاری تنظیمات هدر
+async function loadSettings() {
+  try {
+    const res = await fetch('/api/settings');
+    const data = await res.json();
+    const s = data.settings || {};
+    if (s.hero_title) document.getElementById('headerTitle').textContent = s.hero_title;
+    if (s.hero_subtitle) document.getElementById('headerTagline').textContent = s.hero_subtitle;
+  } catch (e) {}
+}
+
 async function loadCars() {
   try {
     const res = await fetch(API_URL);
@@ -582,11 +756,12 @@ async function loadCars() {
     allCars = data.cars || [];
     applyFilters();
   } catch (e) {
-    list.innerHTML = '<div class="empty">خطا در بارگذاری خودروها</div>';
+    list.innerHTML = '<div class="empty"><span class="icon">⚠️</span>خطا در بارگذاری خودروها</div>';
     console.error(e);
   }
 }
 
+loadSettings();
 loadCars();
 </script>
 </body>
