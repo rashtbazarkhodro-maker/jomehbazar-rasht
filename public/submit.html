@@ -172,6 +172,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script>
 const form = document.getElementById('carForm');
 const btn = document.getElementById('submitBtn');
@@ -219,14 +220,37 @@ fileInput.addEventListener('change', async (e) => {
       logDebug('▶️ شروع پردازش...');
       logDebug('📷 فایل: ' + file.name + ' — ' + (file.size/1024).toFixed(0) + 'KB');
 
-      // مرحله ۱: خوندن فایل با FileReader (پایدارتر از URL.createObjectURL)
+      let workingFile = file;
+
+      // تشخیص HEIC و تبدیل به JPEG
+      const isHeic = file.name.toLowerCase().endsWith('.heic') ||
+                     file.name.toLowerCase().endsWith('.heif') ||
+                     (file.type && (file.type.includes('heic') || file.type.includes('heif')));
+
+      if (isHeic) {
+        logDebug('🍎 فایل HEIC — در حال تبدیل...');
+        try {
+          const convertedBlob = await heic2any({
+            blob: file,
+            toType: 'image/jpeg',
+            quality: 0.85
+          });
+          const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+          workingFile = new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+          logDebug('✅ HEIC تبدیل شد: ' + (workingFile.size/1024).toFixed(0) + 'KB');
+        } catch (heicErr) {
+          throw new Error('تبدیل HEIC ناموفق — عکس دیگه‌ای انتخاب کن');
+        }
+      }
+
+      // مرحله ۱: خوندن فایل با FileReader
       logDebug('📖 خواندن فایل...');
       const dataUrl = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
         reader.onerror = () => reject(new Error('خطا در خواندن فایل'));
         reader.onabort = () => reject(new Error('خواندن لغو شد'));
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(workingFile);
       });
       logDebug('✅ فایل خوانده شد');
 
