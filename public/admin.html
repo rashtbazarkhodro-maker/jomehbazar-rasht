@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل ادمین | جمعه بازار خودرو رشت</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: #f5f6f8;
+    color: #222;
+    line-height: 1.6;
+  }
+  header {
+    background: #1e3a5f;
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 { font-size: 1rem; }
+  header button {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .login {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 24px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .login h2 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: #1e3a5f;
+  }
+  .login input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+  .login button {
+    width: 100%;
+    padding: 12px;
+    background: #1e3a5f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+  .hidden { display: none !important; }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat {
+    background: white;
+    padding: 14px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .stat-num {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1e3a5f;
+  }
+  .stat-label { font-size: 0.75rem; color: #888; }
+  .stat.pending .stat-num { color: #e8a500; }
+  .stat.approved .stat-num { color: #1e6b30; }
+  .stat.rejected .stat-num { color: #c33; }
+
+  .tabs {
+    display: flex;
+    background: white;
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .tabs button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  .tabs button.active {
+    background: #1e3a5f;
+    color: white;
+  }
+
+  .car-card {
+    background: white;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .car-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 8px;
+  }
+  .car-title { font-weight: 700; font-size: 0.95rem; }
+  .car-id { font-size: 0.7rem; color: #aaa; }
+  .car-meta {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 4px;
+  }
+  .car-price {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin: 6px 0;
+  }
+  .car-desc {
+    font-size: 0.8rem;
+    color: #555;
+    margin: 6px 0;
+    padding: 8px;
+    background: #f9f9f9;
+    border-radius: 6px;
+  }
+  .car-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-approve { background: #1e6b30; color: white; }
+  .btn-reject { background: #c33; color: white; }
+  .btn-delete { background: #eee; color: #666; }
+  .btn:disabled { opacity: 0.5; cursor: wait; }
+
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 0.9rem;
+    background: white;
+    border-radius: 10px;
+  }
+  .img-thumb {
+    width: 60px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-left: 8px;
+  }
+  .message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    display: none;
+  }
+  .message.success { background: #e6f4ea; color: #1e6b30; display: block; }
+  .message.error { background: #fdecea; color: #a02020; display: block; }
+</style>
+</head>
+<body>
+
+<!-- صفحه ورود -->
+<div class="login" id="loginBox">
+  <h2>🔒 ورود به پنل ادمین</h2>
+  <input type="password" id="passwordInput" placeholder="رمز عبور" autocomplete="current-password">
+  <button onclick="login()">ورود</button>
+  <div id="loginError" class="message error" style="margin-top:12px;"></div>
+</div>
+
+<!-- پنل اصلی -->
+<div id="panel" class="hidden">
+  <header>
+    <h1>پنل مدیریت</h1>
+    <button onclick="logout()">خروج</button>
+  </header>
+
+  <div class="container">
+    <div id="panelMessage" class="message"></div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="tabs">
+      <button data-status="pending" class="active">در انتظار</button>
+      <button data-status="approved">تایید شده</button>
+      <button data-status="rejected">رد شده</button>
+    </div>
+
+    <div id="carList"></div>
+  </div>
+</div>
+
+<script>
+let password = '';
+let currentStatus = 'pending';
+
+function savePassword() {
+  localStorage.setItem('adminPass', password);
+}
+function loadPassword() {
+  password = localStorage.getItem('adminPass') || '';
+}
+function logout() {
+  localStorage.removeItem('adminPass');
+  location.reload();
+}
+
+async function login() {
+  const input = document.getElementById('passwordInput').value;
+  if (!input) return;
+  password = input;
+
+  try {
+    const res = await fetch('/api/admin/stats', {
+      headers: { 'Authorization': 'Bearer ' + password }
+    });
+    if (res.ok) {
+      savePassword();
+      showPanel();
+    } else {
+      document.getElementById('loginError').textContent = '❌ رمز عبور اشتباه است';
+    }
+  } catch (e) {
+    document.getElementById('loginError').textContent = '❌ خطای ارتباط با سرور';
+  }
+}
+
+function showPanel() {
+  document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('panel').classList.remove('hidden');
+  loadStats();
+  loadCars();
+}
+
+async function loadStats() {
+  try {
+    const res = await fetch('/api/admin/stats', {
+      headers: { 'Authorization': 'Bearer ' + password }
+    });
+    const data = await res.json();
+    document.getElementById('stats').innerHTML = `
+      <div class="stat pending">
+        <div class="stat-num">${data.pending}</div>
+        <div class="stat-label">در انتظار</div>
+      </div>
+      <div class="stat approved">
+        <div class="stat-num">${data.approved}</div>
+        <div class="stat-label">تایید شده</div>
+      </div>
+      <div class="stat rejected">
+        <div class="stat-num">${data.rejected}</div>
+        <div class="stat-label">رد شده</div>
+      </div>
+    `;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function formatPrice(n) {
+  return (n || 0).toLocaleString('fa-IR') + ' تومان';
+}
+function formatNum(n) {
+  return (n || 0).toLocaleString('fa-IR');
+}
+
+async function loadCars() {
+  const list = document.getElementById('carList');
+  list.innerHTML = '<div class="empty">در حال بارگذاری...</div>';
+  try {
+    const res = await fetch('/api/admin/cars?status=' + currentStatus, {
+      headers: { 'Authorization': 'Bearer ' + password }
+    });
+    const data = await res.json();
+    const cars = data.cars || [];
+
+    if (cars.length === 0) {
+      list.innerHTML = '<div class="empty">موردی برای نمایش نیست</div>';
+      return;
+    }
+
+    list.innerHTML = cars.map(car => {
+      let img = 'https://via.placeholder.com/60x45?text=No';
+      try {
+        const imgs = JSON.parse(car.images || '[]');
+        if (imgs[0]) img = imgs[0];
+      } catch (e) {}
+
+      return `
+        <div class="car-card" data-id="${car.id}">
+          <div class="car-header">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <img src="${img}" class="img-thumb" alt="">
+              <div>
+                <div class="car-title">${car.title}</div>
+                <div class="car-id">#${car.id}</div>
+              </div>
+            </div>
+          </div>
+          <div class="car-meta">${formatNum(car.year)} • ${formatNum(car.mileage)} کیلومتر • ${car.color || '-'} • ${car.gearbox || '-'}</div>
+          <div class="car-price">${formatPrice(car.price)}</div>
+          <div class="car-meta">📞 ${car.phone || '-'}</div>
+          ${car.description ? `<div class="car-desc">${car.description}</div>` : ''}
+          <div class="car-actions">
+            ${currentStatus === 'pending' ? `
+              <button class="btn btn-approve" onclick="action(${car.id}, 'approve')">✅ تایید</button>
+              <button class="btn btn-reject" onclick="action(${car.id}, 'reject')">❌ رد</button>
+            ` : `
+              ${currentStatus === 'rejected' ? `<button class="btn btn-approve" onclick="action(${car.id}, 'approve')">✅ تایید</button>` : ''}
+              ${currentStatus === 'approved' ? `<button class="btn btn-reject" onclick="action(${car.id}, 'reject')">❌ رد</button>` : ''}
+              <button class="btn btn-delete" onclick="action(${car.id}, 'delete')">🗑️ حذف</button>
+            `}
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (e) {
+    list.innerHTML = '<div class="empty">خطا در بارگذاری</div>';
+    console.error(e);
+  }
+}
+
+async function action(id, actionType) {
+  const confirmMsg = {
+    approve: 'این آگهی تایید بشه؟',
+    reject: 'این آگهی رد بشه؟',
+    delete: 'این آگهی برای همیشه حذف بشه؟'
+  }[actionType];
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    const res = await fetch(`/api/admin/cars/${id}/${actionType}`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + password }
+    });
+    if (res.ok) {
+      showMessage('✅ انجام شد', 'success');
+      loadStats();
+      loadCars();
+    } else {
+      showMessage('❌ خطا در انجام عملیات', 'error');
+    }
+  } catch (e) {
+    showMessage('❌ خطای ارتباط', 'error');
+  }
+}
+
+function showMessage(text, type) {
+  const el = document.getElementById('panelMessage');
+  el.textContent = text;
+  el.className = 'message ' + type;
+  setTimeout(() => { el.className = 'message'; }, 3000);
+}
+
+// تب‌ها
+document.querySelectorAll('.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentStatus = btn.dataset.status;
+    loadCars();
+  });
+});
+
+// تلاش برای ورود خودکار
+loadPassword();
+if (password) {
+  fetch('/api/admin/stats', { headers: { 'Authorization': 'Bearer ' + password } })
+    .then(r => { if (r.ok) showPanel(); })
+    .catch(() => {});
+}
+</script>
+</body>
+</html>
