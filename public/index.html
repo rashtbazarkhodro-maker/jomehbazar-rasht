@@ -21,26 +21,6 @@
   }
   header h1 { font-size: 1.1rem; }
   header p { font-size: 0.8rem; opacity: 0.8; margin-top: 4px; }
-  .search {
-    padding: 12px 16px;
-    background: white;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  }
-  .search input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 0.9rem;
-  }
-  .search input:focus {
-    outline: none;
-    border-color: #1e3a5f;
-  }
   .btn-submit-link {
     display: inline-block;
     margin-top: 10px;
@@ -52,6 +32,184 @@
     font-size: 0.85rem;
     font-weight: 700;
   }
+
+  /* نوار جستجو + دکمه فیلتر */
+  .search-bar {
+    padding: 12px 16px;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .search-bar input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+  .search-bar input:focus {
+    outline: none;
+    border-color: #1e3a5f;
+  }
+  .filter-toggle {
+    padding: 10px 14px;
+    background: #1e3a5f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+  }
+  .filter-toggle.has-filter::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    background: #ffb703;
+    border-radius: 50%;
+  }
+
+  /* پنل فیلتر (روی موبایل، پایین باز می‌شه) */
+  .filter-panel {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 16px 16px 0 0;
+    padding: 20px;
+    z-index: 1000;
+    transition: bottom 0.3s;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  }
+  .filter-panel.open { bottom: 0; }
+  .filter-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .filter-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+  }
+  .filter-header h3 { font-size: 1rem; color: #1e3a5f; }
+  .filter-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    line-height: 1;
+  }
+
+  .filter-group { margin-bottom: 16px; }
+  .filter-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  .range-inputs {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .range-inputs input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  .range-inputs span {
+    color: #999;
+    font-size: 0.8rem;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    padding: 8px 14px;
+    background: #f0f4f9;
+    border: 1px solid #e0e5ec;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip.active {
+    background: #1e3a5f;
+    color: white;
+    border-color: #1e3a5f;
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+  }
+  .btn-reset {
+    flex: 1;
+    padding: 12px;
+    background: #f0f0f0;
+    color: #555;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-apply {
+    flex: 2;
+    padding: 12px;
+    background: #1e3a5f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* نتیجه */
   .result-count {
     padding: 8px 16px;
     font-size: 0.8rem;
@@ -65,12 +223,9 @@
     max-width: 900px;
     margin: 0 auto;
   }
-  @media (min-width: 600px) {
-    .cars { grid-template-columns: 1fr 1fr; }
-  }
-  @media (min-width: 900px) {
-    .cars { grid-template-columns: 1fr 1fr 1fr; }
-  }
+  @media (min-width: 600px) { .cars { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 900px) { .cars { grid-template-columns: 1fr 1fr 1fr; } }
+
   .card {
     background: white;
     border-radius: 12px;
@@ -95,17 +250,12 @@
     font-weight: 700;
     color: #1e3a5f;
   }
-  .empty {
+  .empty, .loading {
     text-align: center;
     padding: 40px 20px;
     color: #999;
     font-size: 0.9rem;
-  }
-  .loading {
-    text-align: center;
-    padding: 40px 20px;
-    color: #999;
-    font-size: 0.9rem;
+    grid-column: 1 / -1;
   }
 </style>
 </head>
@@ -116,8 +266,9 @@
   <a href="submit.html" class="btn-submit-link">+ ثبت آگهی</a>
 </header>
 
-<div class="search">
+<div class="search-bar">
   <input type="text" id="searchInput" placeholder="جستجوی برند یا مدل...">
+  <button class="filter-toggle" id="filterToggle">⚙️ فیلتر</button>
 </div>
 
 <div class="result-count" id="resultCount"></div>
@@ -125,21 +276,84 @@
   <div class="loading">در حال بارگذاری...</div>
 </div>
 
+<!-- پنل فیلتر -->
+<div class="filter-overlay" id="filterOverlay"></div>
+<div class="filter-panel" id="filterPanel">
+  <div class="filter-header">
+    <h3>فیلترها</h3>
+    <button class="filter-close" id="filterClose">×</button>
+  </div>
+
+  <div class="filter-group">
+    <label>قیمت (تومان)</label>
+    <div class="range-inputs">
+      <input type="number" id="priceMin" placeholder="از" min="0">
+      <span>—</span>
+      <input type="number" id="priceMax" placeholder="تا" min="0">
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label>سال ساخت</label>
+    <div class="range-inputs">
+      <input type="number" id="yearMin" placeholder="از" min="1370" max="1410">
+      <span>—</span>
+      <input type="number" id="yearMax" placeholder="تا" min="1370" max="1410">
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label>گیربکس</label>
+    <div class="chips" id="gearboxChips">
+      <button type="button" class="chip" data-val="دستی">دستی</button>
+      <button type="button" class="chip" data-val="اتوماتیک">اتوماتیک</button>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label>سوخت</label>
+    <div class="chips" id="fuelChips">
+      <button type="button" class="chip" data-val="بنزین">بنزین</button>
+      <button type="button" class="chip" data-val="دیزل">دیزل</button>
+      <button type="button" class="chip" data-val="دوگانه‌سوز">دوگانه‌سوز</button>
+      <button type="button" class="chip" data-val="برقی">برقی</button>
+      <button type="button" class="chip" data-val="هیبرید">هیبرید</button>
+    </div>
+  </div>
+
+  <div class="filter-actions">
+    <button type="button" class="btn-reset" id="filterReset">پاک کردن</button>
+    <button type="button" class="btn-apply" id="filterApply">اعمال فیلتر</button>
+  </div>
+</div>
+
 <script>
 const API_URL = '/api/cars';
-
 let allCars = [];
 
+const filters = {
+  priceMin: null,
+  priceMax: null,
+  yearMin: null,
+  yearMax: null,
+  gearbox: null,
+  fuel: null
+};
+
 function formatPrice(n) {
-  return n.toLocaleString('fa-IR') + ' تومان';
+  return (n || 0).toLocaleString('fa-IR') + ' تومان';
 }
 function formatNum(n) {
-  return n.toLocaleString('fa-IR');
+  return (n || 0).toLocaleString('fa-IR');
 }
 
 const list = document.getElementById('carsList');
 const searchInput = document.getElementById('searchInput');
 const resultCount = document.getElementById('resultCount');
+
+const filterPanel = document.getElementById('filterPanel');
+const filterOverlay = document.getElementById('filterOverlay');
+const filterToggle = document.getElementById('filterToggle');
 
 function renderCars(cars) {
   list.innerHTML = '';
@@ -150,22 +364,17 @@ function renderCars(cars) {
   }
   resultCount.textContent = cars.length + ' خودرو پیدا شد';
   cars.forEach(car => {
-    // parse کردن آرایه عکس‌ها
     let images = [];
-    try {
-      images = JSON.parse(car.images || '[]');
-    } catch (e) {
-      images = [];
-    }
+    try { images = JSON.parse(car.images || '[]'); } catch (e) {}
     const imgUrl = images[0] || 'https://via.placeholder.com/400x300?text=No+Image';
 
     const el = document.createElement('div');
     el.className = 'card';
     el.innerHTML = `
-      <img src="${imgUrl}" alt="${car.title}" loading="lazy">
+      <img src="${imgUrl}" alt="${car.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
       <div class="card-body">
         <h3>${car.title}</h3>
-        <div class="card-meta">${formatNum(car.year)} • ${formatNum(car.mileage)} کیلومتر</div>
+        <div class="card-meta">${formatNum(car.year)} • ${formatNum(car.mileage)} کیلومتر${car.gearbox ? ' • ' + car.gearbox : ''}</div>
         <div class="card-price">${formatPrice(car.price)}</div>
       </div>
     `;
@@ -176,31 +385,115 @@ function renderCars(cars) {
   });
 }
 
-function filterCars() {
+function applyFilters() {
   const query = searchInput.value.trim().toLowerCase();
-  if (!query) {
-    renderCars(allCars);
-    return;
+  let filtered = allCars.slice();
+
+  // جستجو
+  if (query) {
+    filtered = filtered.filter(car =>
+      (car.title && car.title.toLowerCase().includes(query)) ||
+      (car.brand && car.brand.toLowerCase().includes(query)) ||
+      (car.model && car.model.toLowerCase().includes(query))
+    );
   }
-  const filtered = allCars.filter(car =>
-    car.title.toLowerCase().includes(query) ||
-    (car.brand && car.brand.toLowerCase().includes(query)) ||
-    (car.model && car.model.toLowerCase().includes(query))
-  );
+
+  // قیمت
+  if (filters.priceMin != null) filtered = filtered.filter(c => c.price >= filters.priceMin);
+  if (filters.priceMax != null) filtered = filtered.filter(c => c.price <= filters.priceMax);
+
+  // سال
+  if (filters.yearMin != null) filtered = filtered.filter(c => c.year >= filters.yearMin);
+  if (filters.yearMax != null) filtered = filtered.filter(c => c.year <= filters.yearMax);
+
+  // گیربکس
+  if (filters.gearbox) filtered = filtered.filter(c => c.gearbox === filters.gearbox);
+
+  // سوخت
+  if (filters.fuel) filtered = filtered.filter(c => c.fuel === filters.fuel);
+
   renderCars(filtered);
+
+  // آپدیت نشانگر فیلتر فعال
+  const hasFilter = filters.priceMin != null || filters.priceMax != null ||
+                    filters.yearMin != null || filters.yearMax != null ||
+                    filters.gearbox || filters.fuel;
+  filterToggle.classList.toggle('has-filter', hasFilter);
 }
 
-searchInput.addEventListener('input', filterCars);
+// باز/بسته کردن پنل
+filterToggle.addEventListener('click', () => {
+  filterPanel.classList.add('open');
+  filterOverlay.classList.add('open');
+});
+filterOverlay.addEventListener('click', closeFilter);
+document.getElementById('filterClose').addEventListener('click', closeFilter);
+function closeFilter() {
+  filterPanel.classList.remove('open');
+  filterOverlay.classList.remove('open');
+}
 
-// بارگذاری از API
+// چیپ‌ها
+function setupChips(containerId, filterKey) {
+  const container = document.getElementById(containerId);
+  container.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const val = chip.dataset.val;
+      if (chip.classList.contains('active')) {
+        chip.classList.remove('active');
+        filters[filterKey] = null;
+      } else {
+        container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        filters[filterKey] = val;
+      }
+    });
+  });
+}
+setupChips('gearboxChips', 'gearbox');
+setupChips('fuelChips', 'fuel');
+
+// اعمال فیلتر
+document.getElementById('filterApply').addEventListener('click', () => {
+  filters.priceMin = document.getElementById('priceMin').value ? parseInt(document.getElementById('priceMin').value) : null;
+  filters.priceMax = document.getElementById('priceMax').value ? parseInt(document.getElementById('priceMax').value) : null;
+  filters.yearMin = document.getElementById('yearMin').value ? parseInt(document.getElementById('yearMin').value) : null;
+  filters.yearMax = document.getElementById('yearMax').value ? parseInt(document.getElementById('yearMax').value) : null;
+
+  applyFilters();
+  closeFilter();
+});
+
+// پاک کردن
+document.getElementById('filterReset').addEventListener('click', () => {
+  filters.priceMin = null;
+  filters.priceMax = null;
+  filters.yearMin = null;
+  filters.yearMax = null;
+  filters.gearbox = null;
+  filters.fuel = null;
+
+  document.getElementById('priceMin').value = '';
+  document.getElementById('priceMax').value = '';
+  document.getElementById('yearMin').value = '';
+  document.getElementById('yearMax').value = '';
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+
+  applyFilters();
+});
+
+// جستجو
+searchInput.addEventListener('input', applyFilters);
+
+// بارگذاری
 async function loadCars() {
   try {
     const res = await fetch(API_URL);
     const data = await res.json();
     allCars = data.cars || [];
-    renderCars(allCars);
+    applyFilters();
   } catch (e) {
-    list.innerHTML = '<div class="empty">خطا در بارگذاری خودروها. لطفاً دوباره تلاش کنید.</div>';
+    list.innerHTML = '<div class="empty">خطا در بارگذاری خودروها</div>';
     console.error(e);
   }
 }
