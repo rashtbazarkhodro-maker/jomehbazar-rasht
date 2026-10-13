@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جمعه بازار خودرو رشت</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: #f5f6f8;
+    color: #222;
+    line-height: 1.6;
+  }
+  header {
+    background: #1e3a5f;
+    color: white;
+    padding: 16px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.1rem; }
+  header p { font-size: 0.8rem; opacity: 0.8; margin-top: 4px; }
+  .search {
+    padding: 12px 16px;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .search input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+  .cars {
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  @media (min-width: 600px) {
+    .cars { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 900px) {
+    .cars { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  .card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .card img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    background: #eee;
+    display: block;
+  }
+  .card-body { padding: 12px; }
+  .card-body h3 { font-size: 1rem; margin-bottom: 6px; }
+  .card-meta { font-size: 0.8rem; color: #666; margin-bottom: 6px; }
+  .card-price {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e3a5f;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>جمعه بازار خودرو رشت</h1>
+  <p>نمایشگاه خودروهای سبک و سنگین</p>
+</header>
+
+<div class="search">
+  <input type="text" placeholder="جستجوی برند یا مدل...">
+</div>
+
+<div class="cars" id="carsList"></div>
+
+<script>
+const sampleCars = [
+  { title: 'پژو ۲۰۷ اتوماتیک', year: 1402, mileage: 20000, price: 850000000, img: 'https://picsum.photos/seed/car1/400/300' },
+  { title: 'سمند LX', year: 1398, mileage: 90000, price: 420000000, img: 'https://picsum.photos/seed/car2/400/300' },
+  { title: 'دنا پلاس توربو', year: 1401, mileage: 35000, price: 780000000, img: 'https://picsum.photos/seed/car3/400/300' },
+  { title: 'شاهین G', year: 1402, mileage: 12000, price: 950000000, img: 'https://picsum.photos/seed/car4/400/300' },
+  { title: 'تیبا صندوقدار', year: 1397, mileage: 120000, price: 310000000, img: 'https://picsum.photos/seed/car5/400/300' },
+  { title: 'رانا پلاس', year: 1400, mileage: 55000, price: 560000000, img: 'https://picsum.photos/seed/car6/400/300' }
+];
+
+function formatPrice(n) {
+  return n.toLocaleString('fa-IR') + ' تومان';
+}
+function formatNum(n) {
+  return n.toLocaleString('fa-IR');
+}
+
+const list = document.getElementById('carsList');
+sampleCars.forEach(car => {
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.innerHTML = `
+    <img src="${car.img}" alt="${car.title}" loading="lazy">
+    <div class="card-body">
+      <h3>${car.title}</h3>
+      <div class="card-meta">${formatNum(car.year)} • ${formatNum(car.mileage)} کیلومتر</div>
+      <div class="card-price">${formatPrice(car.price)}</div>
+    </div>
+  `;
+  list.appendChild(el);
+});
+</script>
+</body>
+</html>
