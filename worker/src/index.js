@@ -1,5 +1,38 @@
 import { AwsClient } from 'aws4fetch';
 
+    // ===== TEST: تست اتصال B2 =====
+    if (url.pathname === '/api/test-b2' && request.method === 'GET') {
+      try {
+        const testKey = `test/test-${Date.now()}.txt`;
+        const b2Url = `https://${env.B2_ENDPOINT}/${env.B2_BUCKET}/${testKey}`;
+        const testBody = new TextEncoder().encode('Hello B2');
+
+        const uploadRes = await b2.fetch(b2Url, {
+          method: 'PUT',
+          body: testBody,
+          headers: { 'Content-Type': 'text/plain' }
+        });
+
+        const text = await uploadRes.text();
+        return Response.json({
+          ok: uploadRes.ok,
+          status: uploadRes.status,
+          statusText: uploadRes.statusText,
+          responseBody: text.slice(0, 500),
+          b2Url: b2Url,
+          keyId: env.B2_KEY_ID ? env.B2_KEY_ID.slice(0, 10) + '...' : 'MISSING',
+          bucket: env.B2_BUCKET,
+          endpoint: env.B2_ENDPOINT,
+          region: env.B2_REGION
+        }, { headers: corsHeaders });
+      } catch (e) {
+        return Response.json({
+          error: e.message,
+          stack: e.stack ? e.stack.slice(0, 500) : 'no stack',
+          name: e.name
+        }, { status: 500, headers: corsHeaders });
+      }
+    }
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
