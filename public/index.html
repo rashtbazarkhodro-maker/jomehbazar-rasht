@@ -210,6 +210,34 @@
   }
 
   /* نتیجه */
+  .sort-bar {
+    padding: 8px 16px;
+    background: white;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    border-bottom: 1px solid #eee;
+    scrollbar-width: none;
+  }
+  .sort-bar::-webkit-scrollbar { display: none; }
+  .sort-chip {
+    padding: 7px 14px;
+    background: #f0f4f9;
+    border: 1px solid #e0e5ec;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .sort-chip.active {
+    background: #1e3a5f;
+    color: white;
+    border-color: #1e3a5f;
+  }
   .result-count {
     padding: 8px 16px;
     font-size: 0.8rem;
@@ -269,6 +297,14 @@
 <div class="search-bar">
   <input type="text" id="searchInput" placeholder="جستجوی برند یا مدل...">
   <button class="filter-toggle" id="filterToggle">⚙️ فیلتر</button>
+</div>
+
+<div class="sort-bar" id="sortBar">
+  <button class="sort-chip active" data-sort="newest">🆕 جدیدترین</button>
+  <button class="sort-chip" data-sort="cheapest">💰 ارزان‌ترین</button>
+  <button class="sort-chip" data-sort="expensive">💎 گران‌ترین</button>
+  <button class="sort-chip" data-sort="lowMileage">🛣️ کم‌کارکردترین</button>
+  <button class="sort-chip" data-sort="newestYear">📅 جدیدترین سال</button>
 </div>
 
 <div class="result-count" id="resultCount"></div>
@@ -339,6 +375,26 @@ const filters = {
   gearbox: null,
   fuel: null
 };
+
+let currentSort = 'newest';
+
+function sortCars(cars) {
+  const sorted = cars.slice();
+  switch (currentSort) {
+    case 'newest':
+      return sorted.sort((a, b) => b.id - a.id);
+    case 'cheapest':
+      return sorted.sort((a, b) => a.price - b.price);
+    case 'expensive':
+      return sorted.sort((a, b) => b.price - a.price);
+    case 'lowMileage':
+      return sorted.sort((a, b) => a.mileage - b.mileage);
+    case 'newestYear':
+      return sorted.sort((a, b) => b.year - a.year);
+    default:
+      return sorted;
+  }
+}
 
 function formatPrice(n) {
   return (n || 0).toLocaleString('fa-IR') + ' تومان';
@@ -412,6 +468,9 @@ function applyFilters() {
   // سوخت
   if (filters.fuel) filtered = filtered.filter(c => c.fuel === filters.fuel);
 
+  // مرتب‌سازی
+  filtered = sortCars(filtered);
+
   renderCars(filtered);
 
   // آپدیت نشانگر فیلتر فعال
@@ -484,6 +543,16 @@ document.getElementById('filterReset').addEventListener('click', () => {
 
 // جستجو
 searchInput.addEventListener('input', applyFilters);
+
+// دکمه‌های مرتب‌سازی
+document.querySelectorAll('#sortBar .sort-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#sortBar .sort-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    currentSort = chip.dataset.sort;
+    applyFilters();
+  });
+});
 
 // بارگذاری
 async function loadCars() {
