@@ -32,6 +32,22 @@
     font-size: 0.85rem;
     font-weight: 700;
   }
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 10px;
+    font-size: 0.8rem;
+  }
+  .nav-links a {
+    color: white;
+    text-decoration: none;
+    opacity: 0.8;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: opacity 0.15s;
+  }
+  .nav-links a:hover { opacity: 1; text-decoration: underline; }
 
   /* نوار جستجو + دکمه فیلتر */
   .search-bar {
@@ -292,6 +308,10 @@
   <h1>جمعه بازار خودرو رشت</h1>
   <p>نمایشگاه خودروهای سبک و سنگین</p>
   <a href="submit.html" class="btn-submit-link">+ ثبت آگهی</a>
+  <div class="nav-links">
+    <a href="/">خانه</a>
+    <a href="about.html">درباره ما</a>
+  </div>
 </header>
 
 <div class="search-bar">

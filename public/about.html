@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درباره ما | جمعه بازار خودرو رشت</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: #f5f6f8;
+    color: #222;
+    line-height: 1.8;
+  }
+  header {
+    background: #1e3a5f;
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header a { color: white; text-decoration: none; font-size: 1.3rem; }
+  header h1 { font-size: 1rem; }
+
+  .hero {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .hero h2 { font-size: 1.4rem; margin-bottom: 8px; }
+  .hero p { font-size: 0.9rem; opacity: 0.85; }
+
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .card h3 {
+    font-size: 1rem;
+    color: #1e3a5f;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h3 .icon { font-size: 1.2rem; }
+  .card p {
+    font-size: 0.9rem;
+    color: #444;
+    text-align: justify;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-icon {
+    width: 42px;
+    height: 42px;
+    background: #f0f4f9;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .info-content { flex: 1; }
+  .info-label { font-size: 0.75rem; color: #888; }
+  .info-value { font-size: 0.9rem; font-weight: 600; color: #333; }
+  .info-value a {
+    color: #1e3a5f;
+    text-decoration: none;
+    direction: ltr;
+    display: inline-block;
+  }
+  .info-value a:hover { text-decoration: underline; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .stat-box {
+    background: #f9fafc;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-box .num {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1e3a5f;
+  }
+  .stat-box .lbl {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  .features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .feature {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 0.85rem;
+    color: #444;
+  }
+  .feature .tick {
+    color: #1e6b30;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .contact-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .contact-buttons a {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    font-family: inherit;
+  }
+  .btn-call { background: #1e3a5f; color: white; }
+  .btn-wa { background: #25d366; color: white; }
+
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.75rem;
+    color: #999;
+  }
+
+  .map-container {
+    margin-top: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f0f0f0;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/">→</a>
+  <h1>درباره ما</h1>
+</header>
+
+<div class="hero">
+  <h2>جمعه بازار خودرو رشت</h2>
+  <p>نمایشگاه خودروهای سبک و سنگین</p>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <h3><span class="icon">🚗</span> ما کی هستیم؟</h3>
+    <p>
+      جمعه بازار خودرو رشت یکی از معتبرترین نمایشگاه‌های خودرو در استان گیلان است که با سال‌ها تجربه در خرید و فروش خودروهای سبک و سنگین، آماده خدمت‌رسانی به شما عزیزان می‌باشد.
+    </p>
+    <p style="margin-top:10px;">
+      هدف ما این است که با ایجاد بستری ساده و شفاف، خرید و فروش خودرو را برای همه آسان‌تر کنیم. در سایت ما می‌توانید خودروهای موجود را مشاهده کنید، با مشخصات کامل و قیمت روز آشنا شوید و برای بازدید حضوری اقدام کنید.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">✨</span> چرا ما؟</h3>
+    <div class="features">
+      <div class="feature"><span class="tick">✓</span> کارشناسی دقیق و بی‌طرف تمام خودروها</div>
+      <div class="feature"><span class="tick">✓</span> تضمین اصالت و سلامت خودرو</div>
+      <div class="feature"><span class="tick">✓</span> قیمت‌گذاری منصفانه بر اساس بازار روز</div>
+      <div class="feature"><span class="tick">✓</span> پشتیبانی کامل تا پایان معامله</div>
+      <div class="feature"><span class="tick">✓</span> امکان معاوضه و خرید نقدی و اقساطی</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📞</span> راه‌های ارتباطی</h3>
+
+    <div class="info-row">
+      <div class="info-icon">📱</div>
+      <div class="info-content">
+        <div class="info-label">تماس و واتساپ</div>
+        <div class="info-value"><a href="tel:09111234567">۰۹۱۱۱۲۳۴۵۶۷</a></div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-icon">📞</div>
+      <div class="info-content">
+        <div class="info-label">تلفن ثابت</div>
+        <div class="info-value"><a href="tel:01333000000">۰۱۳-۳۳۰۰۰۰۰۰</a></div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-icon">📍</div>
+      <div class="info-content">
+        <div class="info-label">آدرس</div>
+        <div class="info-value">رشت، جاده تهران، جنب جمعه بازار خودرو</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-icon">🕐</div>
+      <div class="info-content">
+        <div class="info-label">ساعت کاری</div>
+        <div class="info-value">هر روز ۹ صبح تا ۹ شب</div>
+      </div>
+    </div>
+
+    <div class="contact-buttons">
+      <a class="btn-call" href="tel:09111234567">📞 تماس</a>
+      <a class="btn-wa" href="https://wa.me/989111234567" target="_blank">واتساپ</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📍</span> موقعیت روی نقشه</h3>
+    <div class="map-container">
+      🗺️ موقعیت نمایشگاه روی نقشه
+      <br>
+      <a href="https://maps.google.com/?q=رشت+جمعه+بازار+خودرو" target="_blank" style="color:#1e3a5f;text-decoration:underline;margin-top:8px;display:inline-block;">مشاهده در گوگل مپ</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📝</span> می‌خوای خودروت رو بفروشی؟</h3>
+    <p style="margin-bottom:14px;">
+      کافیه اطلاعات خودروت رو از طریق فرم ثبت آگهی برامون بفرستی. بعد از بررسی، آگهی‌ت روی سایت نمایش داده می‌شه و کارشناسان ما با خریداران تماس می‌گیرن.
+    </p>
+    <a href="submit.html" style="display:block;padding:12px;background:#ffb703;color:#1e3a5f;text-decoration:none;text-align:center;border-radius:10px;font-weight:700;font-size:0.9rem;">+ ثبت آگهی خودرو</a>
+  </div>
+
+</div>
+
+<div class="footer">
+  © جمعه بازار خودرو رشت — تمامی حقوق محفوظ است
+</div>
+
+</body>
+</html>
