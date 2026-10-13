@@ -216,30 +216,43 @@ fileInput.addEventListener('change', async (e) => {
       logDebug('▶️ شروع پردازش...');
       logDebug('📷 فایل اصلی: ' + file.name + ' — ' + (file.size/1024).toFixed(0) + 'KB — ' + (file.type || '?'));
 
-      // تلاش برای فشرده‌سازی — اگه نشد، فایل اصلی
-      let compressed = file;
+      // مرحله ۱: خوندن فایل به صورت ArrayBuffer
+      logDebug('📖 خواندن فایل...');
+      let arrayBuffer;
       try {
-        compressed = await imageCompression(file, {
+        arrayBuffer = await file.arrayBuffer();
+        logDebug('✅ خونده شد: ' + (arrayBuffer.byteLength/1024).toFixed(0) + 'KB');
+      } catch (readErr) {
+        throw new Error('فایل قابل خواندن نیست — احتمالاً فرمت HEIC است. لطفاً عکس دیگه‌ای انتخاب کن');
+      }
+
+      // مرحله ۲: ساخت Blob از بایت‌های خونده شده
+      const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+
+      // مرحله ۳: تلاش برای فشرده‌سازی (اختیاری)
+      let finalBlob = blob;
+      try {
+        const compressed = await imageCompression(new File([blob], file.name, { type: 'image/jpeg' }), {
           maxWidthOrHeight: 1200,
           maxSizeMB: 0.4,
           useWebWorker: false,
           fileType: 'image/jpeg'
         });
+        finalBlob = compressed;
         logDebug('🔄 فشرده شد: ' + (compressed.size/1024).toFixed(0) + 'KB');
       } catch (compErr) {
-        const reason = compErr && compErr.type ? compErr.type : (compErr && compErr.message ? compErr.message : 'ناشناخته');
-        logDebug('⚠️ فشرده‌سازی نشد (' + reason + ') — از فایل اصلی استفاده می‌کنم');
-        compressed = file;
+        logDebug('⚠️ فشرده نشد — ارسال بدون فشرده‌سازی');
       }
 
-      // اگه فایل اصلی > ۵MB → خطا
-      if (compressed.size > 5 * 1024 * 1024) {
-        throw new Error('حجم عکس بیش از ۵ مگابایت است');
+      if (finalBlob.size > 5 * 1024 * 1024) {
+        throw new Error('حجم عکس بیش از ۵ مگابایت است (' + (finalBlob.size/1024/1024).toFixed(1) + 'MB)');
       }
 
+      // مرحله ۴: آپلود
       const fd = new FormData();
-      fd.append('image', compressed, file.name || 'image.jpg');
-      logDebug('📤 در حال ارسال...');
+      fd.append('image', finalBlob, file.name || 'image.jpg');
+      logDebug('📤 در حال ارسال (' + (finalBlob.size/1024).toFixed(0) + 'KB)...');
+
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: fd
