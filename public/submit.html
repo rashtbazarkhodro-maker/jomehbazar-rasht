@@ -214,49 +214,58 @@ fileInput.addEventListener('change', async (e) => {
 
     try {
       logDebug('▶️ شروع پردازش...');
-      logDebug('📷 فایل اصلی: ' + file.name + ' — ' + (file.size/1024).toFixed(0) + 'KB — ' + (file.type || '?'));
+      logDebug('📷 فایل: ' + file.name + ' — ' + (file.size/1024).toFixed(0) + 'KB');
 
-      // مرحله ۱: خوندن فایل به صورت ArrayBuffer
-      logDebug('📖 خواندن فایل...');
-      let arrayBuffer;
-      try {
-        arrayBuffer = await file.arrayBuffer();
-        logDebug('✅ خونده شد: ' + (arrayBuffer.byteLength/1024).toFixed(0) + 'KB');
-      } catch (readErr) {
-        throw new Error('فایل قابل خواندن نیست — احتمالاً فرمت HEIC است. لطفاً عکس دیگه‌ای انتخاب کن');
-      }
-
-      // مرحله ۲: ساخت Blob از بایت‌های خونده شده
-      const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
-
-      // مرحله ۳: تلاش برای فشرده‌سازی (اختیاری)
-      let finalBlob = blob;
-      try {
-        const compressed = await imageCompression(new File([blob], file.name, { type: 'image/jpeg' }), {
-          maxWidthOrHeight: 1200,
-          maxSizeMB: 0.4,
-          useWebWorker: false,
-          fileType: 'image/jpeg'
-        });
-        finalBlob = compressed;
-        logDebug('🔄 فشرده شد: ' + (compressed.size/1024).toFixed(0) + 'KB');
-      } catch (compErr) {
-        logDebug('⚠️ فشرده نشد — ارسال بدون فشرده‌سازی');
-      }
-
-      if (finalBlob.size > 5 * 1024 * 1024) {
-        throw new Error('حجم عکس بیش از ۵ مگابایت است (' + (finalBlob.size/1024/1024).toFixed(1) + 'MB)');
-      }
-
-      // مرحله ۴: آپلود
-      const fd = new FormData();
-      fd.append('image', finalBlob, file.name || 'image.jpg');
-      logDebug('📤 در حال ارسال (' + (finalBlob.size/1024).toFixed(0) + 'KB)...');
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: fd
+      // تبدیل عکس به JPEG با canvas (پشتیبانی از همه فرمت‌ها)
+      const jpegBlob = await new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            let w = img.naturalWidth || img.width;
+            let h = img.naturalHeight || img.height;
+            const maxDim = 1200;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+              else { w = Math.round(w * maxDim / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            canvas.toBlob(
+              (blob) => {
+                URL.revokeObjectURL(url);
+                if (blob) resolve(blob);
+                else reject(new Error('خطا در تبدیل عکس'));
+              },
+              'image/jpeg',
+              0.85
+            );
+          } catch (e) {
+            URL.revokeObjectURL(url);
+            reject(e);
+          }
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error('فرمت این عکس پشتیبانی نمی‌شود — لطفاً عکس دیگه‌ای انتخاب کن'));
+        };
+        img.src = url;
       });
+
+      logDebug('🔄 تبدیل شد: ' + (jpegBlob.size/1024).toFixed(0) + 'KB');
+
+      if (jpegBlob.size > 5 * 1024 * 1024) {
+        throw new Error('حجم عکس بیش از ۵ مگابایت است');
+      }
+
+      const fd = new FormData();
+      fd.append('image', jpegBlob, file.name.replace(/\.[^.]+$/, '') + '.jpg');
+      logDebug('📤 در حال ارسال (' + (jpegBlob.size/1024).toFixed(0) + 'KB)...');
+
+      const res = await fetch('/api/upload', { method: 'POST', body: fd });
       logDebug('📡 پاسخ سرور: HTTP ' + res.status);
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'خطا در سرور');
@@ -272,7 +281,7 @@ fileInput.addEventListener('change', async (e) => {
       item.classList.add('failed');
       item.querySelector('.status').textContent = 'خطا';
       const msg = err && err.message ? err.message : (err && err.type ? err.type : String(err));
-      logDebug('❌ خطا: ' + msg);
+      logDebug('❌ ' + msg);
     }
   }
 });
