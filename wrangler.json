@@ -1,7 +1,16 @@
 {
   "name": "jomehbazar-rasht",
+  "main": "worker/src/index.js",
   "compatibility_date": "2025-01-01",
   "assets": {
-    "directory": "./public"
-  }
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "jomehbazar-db",
+      "database_id": "36911dad-3d11-45cc-8462-b6343a49b5bf"
+    }
+  ]
 }
