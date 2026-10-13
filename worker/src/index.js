@@ -64,13 +64,31 @@ export default {
     // ===== آپلود عکس =====
     if (url.pathname === '/api/upload' && request.method === 'POST') {
       try {
-        const contentType = request.headers.get('Content-Type') || '';
-        if (!contentType.includes('image/')) {
-          return Response.json({ error: 'فقط فایل عکس مجاز است' }, { status: 400, headers: corsHeaders });
+        let arrayBuffer, contentType, origName = 'image.jpg';
+
+        const reqCt = request.headers.get('Content-Type') || '';
+
+        if (reqCt.includes('multipart/form-data')) {
+          // FormData
+          const formData = await request.formData();
+          const file = formData.get('image');
+          if (!file) {
+            return Response.json({ error: 'فایلی ارسال نشد' }, { status: 400, headers: corsHeaders });
+          }
+          contentType = file.type || 'image/jpeg';
+          origName = file.name || 'image.jpg';
+          arrayBuffer = await file.arrayBuffer();
+        } else {
+          // body خام
+          contentType = reqCt || 'image/jpeg';
+          arrayBuffer = await request.arrayBuffer();
         }
-        const arrayBuffer = await request.arrayBuffer();
+
+        if (!contentType.includes('image/')) {
+          return Response.json({ error: 'فقط فایل عکس مجاز است (type: ' + contentType + ')' }, { status: 400, headers: corsHeaders });
+        }
         if (arrayBuffer.byteLength > 5 * 1024 * 1024) {
-          return Response.json({ error: 'حجم عکس بیش از ۵ مگابایت' }, { status: 400, headers: corsHeaders });
+          return Response.json({ error: 'حجم عکس بیش از ۵ مگابایت (' + Math.round(arrayBuffer.byteLength/1024) + 'KB)' }, { status: 400, headers: corsHeaders });
         }
         const ext = contentType.includes('png') ? 'png' : 'jpg';
         const key = `cars/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;

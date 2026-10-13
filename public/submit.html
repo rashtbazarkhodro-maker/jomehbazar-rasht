@@ -237,10 +237,12 @@ fileInput.addEventListener('change', async (e) => {
         throw new Error('حجم عکس بیش از ۵ مگابایت است');
       }
 
+      const fd = new FormData();
+      fd.append('image', compressed, file.name || 'image.jpg');
+      logDebug('📤 در حال ارسال...');
       const res = await fetch('/api/upload', {
         method: 'POST',
-        headers: { 'Content-Type': compressed.type || file.type || 'image/jpeg' },
-        body: compressed
+        body: fd
       });
       logDebug('📡 پاسخ سرور: HTTP ' + res.status);
       const data = await res.json();
