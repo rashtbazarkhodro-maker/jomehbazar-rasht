@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
+
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="جمعه بازار">
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>جمعه بازار خودرو رشت</title>
@@ -764,5 +772,16 @@ async function loadCars() {
 loadSettings();
 loadCars();
 </script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('SW registered:', reg))
+        .catch(err => console.log('SW error:', err));
+    });
+  }
+</script>
+
 </body>
 </html>
