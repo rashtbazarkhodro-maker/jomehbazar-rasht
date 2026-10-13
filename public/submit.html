@@ -212,24 +212,29 @@ fileInput.addEventListener('change', async (e) => {
         fileType: 'image/jpeg'
       });
 
+      console.log('Compressed size:', compressed.size, 'bytes, type:', compressed.type);
+
       // آپلود
       const res = await fetch('/api/upload', {
         method: 'POST',
-        headers: { 'Content-Type': 'image/jpeg' },
+        headers: { 'Content-Type': compressed.type || 'image/jpeg' },
         body: compressed
       });
+      console.log('Upload response status:', res.status);
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || 'خطا');
+      if (!res.ok || !data.success) throw new Error(data.error || 'خطا در سرور');
 
       uploadedImages.push({ url: data.url, key: data.key });
       item.classList.remove('uploading');
       item.classList.add('done');
       item.querySelector('.status').textContent = '✓ آماده';
     } catch (err) {
-      console.error(err);
+      console.error('Upload error:', err);
       item.classList.remove('uploading');
       item.classList.add('failed');
-      item.querySelector('.status').textContent = 'خطا';
+      const msg = (err.message || 'خطا').slice(0, 30);
+      item.querySelector('.status').textContent = msg;
+      item.querySelector('.status').title = err.message || '';
     }
   }
 });
