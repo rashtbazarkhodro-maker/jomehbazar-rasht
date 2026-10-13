@@ -1,6 +1,33 @@
 import { AwsClient } from 'aws4fetch';
 
-    // ===== TEST: تست اتصال B2 =====
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
+    }
+
+    const b2 = new AwsClient({
+      accessKeyId: env.B2_KEY_ID,
+      secretAccessKey: env.B2_APP_KEY,
+      service: 's3',
+      region: env.B2_REGION || 'us-east-005'
+    });
+
+    function checkAdmin(request, env) {
+      const auth = request.headers.get('Authorization') || '';
+      const token = auth.replace('Bearer ', '');
+      return token === (env.ADMIN_PASSWORD || 'admin1234');
+    }
+
+    // ===== TEST B2 =====
     if (url.pathname === '/api/test-b2' && request.method === 'GET') {
       try {
         const testKey = `test/test-${Date.now()}.txt`;
@@ -33,33 +60,6 @@ import { AwsClient } from 'aws4fetch';
         }, { status: 500, headers: corsHeaders });
       }
     }
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-
-    const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    };
-
-    if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders });
-    }
-
-    // ===== B2 Client =====
-    const b2 = new AwsClient({
-      accessKeyId: env.B2_KEY_ID,
-      secretAccessKey: env.B2_APP_KEY,
-      service: 's3',
-      region: env.B2_REGION || 'us-east-005'
-    });
-
-    function checkAdmin(request, env) {
-      const auth = request.headers.get('Authorization') || '';
-      const token = auth.replace('Bearer ', '');
-      return token === (env.ADMIN_PASSWORD || 'admin1234');
-    }
 
     // ===== آپلود عکس =====
     if (url.pathname === '/api/upload' && request.method === 'POST') {
@@ -68,12 +68,10 @@ export default {
         if (!contentType.includes('image/')) {
           return Response.json({ error: 'فقط فایل عکس مجاز است' }, { status: 400, headers: corsHeaders });
         }
-
         const arrayBuffer = await request.arrayBuffer();
         if (arrayBuffer.byteLength > 5 * 1024 * 1024) {
           return Response.json({ error: 'حجم عکس بیش از ۵ مگابایت' }, { status: 400, headers: corsHeaders });
         }
-
         const ext = contentType.includes('png') ? 'png' : 'jpg';
         const key = `cars/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
         const b2Url = `https://${env.B2_ENDPOINT}/${env.B2_BUCKET}/${key}`;
@@ -88,7 +86,6 @@ export default {
           const errText = await uploadRes.text();
           return Response.json({ error: 'خطا در آپلود: ' + errText }, { status: 500, headers: corsHeaders });
         }
-
         return Response.json({
           success: true,
           key: key,
@@ -99,15 +96,13 @@ export default {
       }
     }
 
-    // ===== پروکسی عکس از B2 =====
+    // ===== پروکسی عکس =====
     if (url.pathname.startsWith('/api/images/')) {
       const key = url.pathname.replace('/api/images/', '');
       try {
         const b2Url = `https://${env.B2_ENDPOINT}/${env.B2_BUCKET}/${key}`;
         const imgRes = await b2.fetch(b2Url, { method: 'GET' });
-        if (!imgRes.ok) {
-          return new Response('Not found', { status: 404 });
-        }
+        if (!imgRes.ok) return new Response('Not found', { status: 404 });
         const headers = new Headers();
         headers.set('Content-Type', imgRes.headers.get('Content-Type') || 'image/jpeg');
         headers.set('Cache-Control', 'public, max-age=31536000, immutable');
@@ -117,7 +112,7 @@ export default {
       }
     }
 
-    // ===== API: لیست خودروهای تایید شده =====
+    // ===== لیست خودروها =====
     if (url.pathname === '/api/cars' && request.method === 'GET') {
       try {
         const { results } = await env.DB.prepare(
@@ -129,7 +124,7 @@ export default {
       }
     }
 
-    // ===== API: ثبت خودرو جدید =====
+    // ===== ثبت خودرو =====
     if (url.pathname === '/api/cars' && request.method === 'POST') {
       try {
         const body = await request.json();
@@ -158,7 +153,7 @@ export default {
       }
     }
 
-    // ===== ADMIN: لیست خودروها =====
+    // ===== ADMIN: لیست =====
     if (url.pathname === '/api/admin/cars' && request.method === 'GET') {
       if (!checkAdmin(request, env)) {
         return Response.json({ error: 'دسترسی ندارید' }, { status: 401, headers: corsHeaders });
@@ -215,7 +210,7 @@ export default {
       }
     }
 
-    // ===== API: جزئیات یک خودرو =====
+    // ===== جزئیات یک خودرو =====
     if (url.pathname.startsWith('/api/cars/') && request.method === 'GET') {
       const id = url.pathname.split('/')[3];
       try {
