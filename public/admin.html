@@ -183,6 +183,66 @@
     background: white;
     border-radius: 10px;
   }
+
+  .settings-form {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .settings-form .section-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin: 18px 0 10px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #eee;
+  }
+  .settings-form .section-title:first-child { margin-top: 0; }
+  .settings-form label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+    margin-top: 10px;
+  }
+  .settings-form input,
+  .settings-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    background: #fafafa;
+  }
+  .settings-form input:focus,
+  .settings-form textarea:focus {
+    outline: none;
+    border-color: #1e3a5f;
+    background: white;
+  }
+  .settings-form textarea { resize: vertical; min-height: 70px; }
+  .settings-form .hint {
+    font-size: 0.72rem;
+    color: #888;
+    margin-top: 4px;
+  }
+  .settings-save {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    background: #1e6b30;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .settings-save:disabled { opacity: 0.5; cursor: wait; }
   .img-thumb {
     width: 60px;
     height: 45px;
@@ -227,9 +287,46 @@
       <button data-status="pending" class="active">در انتظار</button>
       <button data-status="approved">تایید شده</button>
       <button data-status="rejected">رد شده</button>
+      <button data-status="settings">⚙️ تنظیمات</button>
     </div>
 
     <div id="carList"></div>
+
+    <div id="settingsPanel" class="hidden">
+      <div class="settings-form">
+        <div class="section-title">🏠 هدر صفحه اصلی</div>
+        <label>عنوان</label>
+        <input type="text" data-setting="hero_title">
+        <label>زیرعنوان</label>
+        <input type="text" data-setting="hero_subtitle">
+
+        <div class="section-title">📄 درباره ما</div>
+        <label>معرفی (پاراگراف ۱)</label>
+        <textarea data-setting="about_intro"></textarea>
+        <label>معرفی (پاراگراف ۲)</label>
+        <textarea data-setting="about_intro2"></textarea>
+        <label>مزایا (با | جدا کن)</label>
+        <textarea data-setting="about_features"></textarea>
+        <div class="hint">مثال: کارشناسی دقیق|تضمین اصالت|قیمت منصفانه</div>
+
+        <div class="section-title">📞 اطلاعات تماس</div>
+        <label>شماره موبایل</label>
+        <input type="tel" data-setting="phone1" placeholder="09123456789">
+        <label>تلفن ثابت</label>
+        <input type="tel" data-setting="phone2" placeholder="01333000000">
+        <label>شماره واتساپ (با کد کشور، بدون +)</label>
+        <input type="tel" data-setting="whatsapp" placeholder="989123456789">
+        <div class="hint">مثال: 989123456789</div>
+        <label>آدرس</label>
+        <textarea data-setting="address"></textarea>
+        <label>ساعت کاری</label>
+        <input type="text" data-setting="hours" placeholder="هر روز ۹ صبح تا ۹ شب">
+        <label>لینک نقشه</label>
+        <input type="url" data-setting="map_url" placeholder="https://maps.google.com/...">
+
+        <button class="settings-save" id="settingsSave">💾 ذخیره تنظیمات</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -401,8 +498,66 @@ document.querySelectorAll('.tabs button').forEach(btn => {
     document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentStatus = btn.dataset.status;
-    loadCars();
+
+    const carList = document.getElementById('carList');
+    const settingsPanel = document.getElementById('settingsPanel');
+
+    if (currentStatus === 'settings') {
+      carList.classList.add('hidden');
+      settingsPanel.classList.remove('hidden');
+      loadSettings();
+    } else {
+      carList.classList.remove('hidden');
+      settingsPanel.classList.add('hidden');
+      loadCars();
+    }
   });
+});
+
+async function loadSettings() {
+  try {
+    const res = await fetch('/api/settings');
+    const data = await res.json();
+    const s = data.settings || {};
+    document.querySelectorAll('#settingsPanel [data-setting]').forEach(el => {
+      const key = el.dataset.setting;
+      el.value = s[key] || '';
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+document.getElementById('settingsSave')?.addEventListener('click', async () => {
+  const btn = document.getElementById('settingsSave');
+  btn.disabled = true;
+  btn.textContent = 'در حال ذخیره...';
+
+  const payload = {};
+  document.querySelectorAll('#settingsPanel [data-setting]').forEach(el => {
+    payload[el.dataset.setting] = el.value;
+  });
+
+  try {
+    const res = await fetch('/api/admin/settings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + password
+      },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      showMessage('✅ تنظیمات ذخیره شد', 'success');
+    } else {
+      showMessage('❌ خطا در ذخیره', 'error');
+    }
+  } catch (e) {
+    showMessage('❌ خطای ارتباط', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 ذخیره تنظیمات';
+  }
 });
 
 // تلاش برای ورود خودکار

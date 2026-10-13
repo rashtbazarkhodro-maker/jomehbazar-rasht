@@ -228,6 +228,39 @@ export default {
       }
     }
 
+    // ===== تنظیمات (عمومی) =====
+    if (url.pathname === '/api/settings' && request.method === 'GET') {
+      try {
+        const { results } = await env.DB.prepare("SELECT key, value FROM settings").all();
+        const settings = {};
+        results.forEach(row => { settings[row.key] = row.value; });
+        return Response.json({ settings }, { headers: corsHeaders });
+      } catch (e) {
+        return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
+      }
+    }
+
+    // ===== ADMIN: آپدیت تنظیمات =====
+    if (url.pathname === '/api/admin/settings' && request.method === 'POST') {
+      if (!checkAdmin(request, env)) {
+        return Response.json({ error: 'دسترسی ندارید' }, { status: 401, headers: corsHeaders });
+      }
+      try {
+        const body = await request.json();
+        const stmts = [];
+        for (const [key, value] of Object.entries(body)) {
+          stmts.push(
+            env.DB.prepare("INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value")
+              .bind(key, String(value))
+          );
+        }
+        await env.DB.batch(stmts);
+        return Response.json({ success: true }, { headers: corsHeaders });
+      } catch (e) {
+        return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
+      }
+    }
+
     // ===== جزئیات یک خودرو =====
     if (url.pathname.startsWith('/api/cars/') && request.method === 'GET') {
       const id = url.pathname.split('/')[3];
