@@ -4,90 +4,316 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ثبت آگهی | جمعه بازار خودرو رشت</title>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Vazirmatn', sans-serif; background: #f5f6f8; color: #222; line-height: 1.6; }
-  header { background: #1e3a5f; color: white; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
-  header a { color: white; text-decoration: none; font-size: 1.3rem; }
-  header h1 { font-size: 1rem; }
-  .container { max-width: 600px; margin: 0 auto; padding: 16px; }
-  .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #333; }
-  .field label .req { color: #c33; }
-  .field input, .field select, .field textarea {
-    width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px;
-    font-family: inherit; font-size: 0.9rem; background: #fafafa;
+  :root {
+    --primary: #1e3a5f;
+    --primary-light: #2c5282;
+    --accent: #ffb703;
+    --success: #1e6b30;
+    --danger: #c33;
+    --bg: #f5f6f8;
+    --text: #1a202c;
+    --text-muted: #64748b;
+    --border: #e5e7eb;
   }
-  .field input:focus, .field select:focus, .field textarea:focus {
-    outline: none; border-color: #1e3a5f; background: white;
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
-  .field textarea { resize: vertical; min-height: 80px; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .hint { font-size: 0.75rem; color: #888; margin-top: 4px; }
-  .btn-submit {
-    width: 100%; padding: 14px; background: #1e3a5f; color: white; border: none;
-    border-radius: 10px; font-family: inherit; font-size: 1rem; font-weight: 700;
-    cursor: pointer; margin-top: 10px;
-  }
-  .btn-submit:disabled { opacity: 0.5; cursor: wait; }
-  .message { padding: 14px; border-radius: 10px; margin-bottom: 14px; font-size: 0.9rem; display: none; }
-  .message.success { background: #e6f4ea; color: #1e6b30; border: 1px solid #b7e1c1; display: block; }
-  .message.error { background: #fdecea; color: #a02020; border: 1px solid #f5c2c0; display: block; }
-  h2 { font-size: 1rem; margin-bottom: 16px; color: #1e3a5f; padding-bottom: 10px; border-bottom: 1px solid #eee; }
 
-  .upload-area {
-    border: 2px dashed #ccc; border-radius: 10px; padding: 24px;
-    text-align: center; cursor: pointer; transition: all 0.15s;
-    background: #fafafa;
+  header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
   }
-  .upload-area:active { border-color: #1e3a5f; background: #f0f4f9; }
-  .upload-area .icon { font-size: 2rem; margin-bottom: 6px; }
-  .upload-area .text { font-size: 0.85rem; color: #666; }
-  .upload-area .sub { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
+  header .back-btn {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+  }
+  header .back-btn:active { transform: scale(0.92); }
+  header h1 { font-size: 1rem; font-weight: 700; }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  .progress-steps {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .progress-step {
+    flex: 1;
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    transition: background 0.3s;
+  }
+  .progress-step.active { background: var(--primary); }
+
+  .form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 24px 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f4f9;
+  }
+  .section-title:first-child { margin-top: 0; }
+  .section-title .num {
+    width: 24px; height: 24px;
+    background: var(--primary);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #334155;
+  }
+  .field label .req { color: var(--danger); }
+  .field label .optional {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 0.72rem;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: #fafafa;
+    transition: all 0.2s;
+    color: var(--text);
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(30,58,95,0.08);
+  }
+  .field textarea { resize: vertical; min-height: 90px; }
+  .field select { appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748b' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 14px center; background-size: 10px; padding-left: 38px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Upload */
+  .upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 14px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fafbfc;
+  }
+  .upload-area:active {
+    border-color: var(--primary);
+    background: #f0f4f9;
+    transform: scale(0.99);
+  }
+  .upload-area .icon { font-size: 2.2rem; margin-bottom: 8px; display: block; }
+  .upload-area .text {
+    font-size: 0.88rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .upload-area .sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
   input[type="file"] { display: none; }
 
   .previews {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
   }
   .preview-item {
-    position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden;
-    background: #eee;
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #e5e7eb;
   }
   .preview-item img { width: 100%; height: 100%; object-fit: cover; }
   .preview-item .remove {
-    position: absolute; top: 4px; left: 4px; width: 24px; height: 24px;
-    background: rgba(200,0,0,0.85); color: white; border: none; border-radius: 50%;
-    font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    position: absolute;
+    top: 5px; left: 5px;
+    width: 26px; height: 26px;
+    background: rgba(220,38,38,0.95);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   }
   .preview-item .status {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    background: rgba(0,0,0,0.7); color: white; font-size: 0.65rem;
-    padding: 3px; text-align: center;
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    font-size: 0.68rem;
+    padding: 4px;
+    text-align: center;
+    backdrop-filter: blur(4px);
+    font-weight: 600;
   }
-  .preview-item.uploading { opacity: 0.6; }
-  .preview-item.done .status { background: rgba(30,107,48,0.85); }
-  .preview-item.failed .status { background: rgba(200,0,0,0.85); }
+  .preview-item.uploading { opacity: 0.7; }
+  .preview-item.uploading .status { background: rgba(30,58,95,0.9); }
+  .preview-item.done .status { background: rgba(30,107,48,0.9); }
+  .preview-item.failed .status { background: rgba(200,0,0,0.9); }
+
+  /* Submit */
+  .btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(30,58,95,0.25);
+  }
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-submit:disabled { opacity: 0.5; cursor: wait; }
+
+  /* Message */
+  .message {
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    font-size: 0.88rem;
+    display: none;
+    font-weight: 600;
+  }
+  .message.success {
+    background: #dcfce7;
+    color: var(--success);
+    border: 1px solid #b7e1c1;
+    display: block;
+  }
+  .message.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    display: block;
+  }
+
+  /* Debug */
+  #debugLog {
+    background: #1a202c;
+    color: #4ade80;
+    font-family: monospace;
+    font-size: 0.7rem;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    display: none;
+    max-height: 180px;
+    overflow-y: auto;
+    direction: ltr;
+    text-align: left;
+    line-height: 1.6;
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <a href="/">→</a>
+  <a href="/" class="back-btn">→</a>
   <h1>ثبت آگهی خودرو</h1>
 </header>
 
 <div class="container">
-  <div class="card">
+  <div class="progress-steps">
+    <div class="progress-step active"></div>
+    <div class="progress-step"></div>
+    <div class="progress-step"></div>
+  </div>
+
+  <div class="form-card">
     <div class="message" id="message"></div>
-    <div id="debugLog" style="background:#222;color:#0f0;font-family:monospace;font-size:0.7rem;padding:8px;border-radius:6px;margin-bottom:12px;display:none;max-height:200px;overflow-y:auto;direction:ltr;text-align:left;"></div>
-    <h2>اطلاعات خودرو</h2>
+    <div id="debugLog"></div>
 
     <form id="carForm">
+
+      <div class="section-title"><span class="num">۱</span> اطلاعات پایه</div>
+
       <div class="field">
         <label>عنوان آگهی <span class="req">*</span></label>
-        <input type="text" name="title" required placeholder="مثال: پژو ۲۰۷ اتوماتیک">
+        <input type="text" name="title" required placeholder="مثال: پژو ۲۰۷ اتوماتیک مدل ۱۴۰۲">
       </div>
 
       <div class="row">
@@ -112,10 +338,12 @@
         </div>
       </div>
 
+      <div class="section-title"><span class="num">۲</span> مشخصات فنی</div>
+
       <div class="field">
         <label>قیمت (تومان) <span class="req">*</span></label>
         <input type="number" name="price" required min="0" placeholder="850000000">
-        <div class="hint">قیمت به تومان، بدون کاما</div>
+        <div class="hint">💰 قیمت به تومان، بدون کاما</div>
       </div>
 
       <div class="row">
@@ -146,27 +374,30 @@
       </div>
 
       <div class="field">
-        <label>شماره تماس <span class="req">*</span></label>
-        <input type="tel" name="phone" required placeholder="09123456789" pattern="09[0-9]{9}">
-      </div>
-
-      <div class="field">
-        <label>توضیحات</label>
+        <label>توضیحات <span class="optional">(اختیاری)</span></label>
         <textarea name="description" placeholder="وضعیت بدنه، بیمه، سایر جزئیات..."></textarea>
       </div>
 
+      <div class="section-title"><span class="num">۳</span> تماس و تصاویر</div>
+
       <div class="field">
-        <label>تصاویر خودرو (حداکثر ۵ عکس)</label>
+        <label>شماره تماس <span class="req">*</span></label>
+        <input type="tel" name="phone" required placeholder="09123456789" pattern="09[0-9]{9}">
+        <div class="hint">۱۱ رقم، شروع با ۰۹</div>
+      </div>
+
+      <div class="field">
+        <label>تصاویر خودرو <span class="optional">(حداکثر ۵ عکس)</span></label>
         <div class="upload-area" id="uploadArea">
-          <div class="icon">📷</div>
+          <span class="icon">📷</span>
           <div class="text">برای انتخاب عکس کلیک کن</div>
-          <div class="sub">JPG یا PNG — حجم بهینه می‌شه</div>
+          <div class="sub">JPG یا PNG — حجم خودکار بهینه می‌شود</div>
         </div>
         <input type="file" id="fileInput" accept="image/*" multiple>
         <div class="previews" id="previews"></div>
       </div>
 
-      <button type="submit" class="btn-submit" id="submitBtn">ثبت آگهی</button>
+      <button type="submit" class="btn-submit" id="submitBtn">✓ ثبت آگهی</button>
     </form>
   </div>
 </div>
@@ -181,7 +412,7 @@ const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 const previews = document.getElementById('previews');
 
-let uploadedImages = []; // { url, key }
+let uploadedImages = [];
 
 function logDebug(msg) {
   const box = document.getElementById('debugLog');
@@ -203,7 +434,7 @@ fileInput.addEventListener('change', async (e) => {
 
   for (let fi = 0; fi < files.length; fi++) {
     const file = files[fi];
-    if (fi > 0) await new Promise(r => setTimeout(r, 300)); // تأخیر بین فایل‌ها
+    if (fi > 0) await new Promise(r => setTimeout(r, 200));
 
     const id = 'p' + Date.now() + Math.random().toString(36).slice(2, 6);
     const item = document.createElement('div');
@@ -221,92 +452,60 @@ fileInput.addEventListener('change', async (e) => {
       logDebug('📷 فایل: ' + file.name + ' — ' + (file.size/1024).toFixed(0) + 'KB');
 
       let workingFile = file;
-
-      // تشخیص HEIC و تبدیل به JPEG
       const isHeic = file.name.toLowerCase().endsWith('.heic') ||
-                     file.name.toLowerCase().endsWith('.heif') ||
-                     (file.type && (file.type.includes('heic') || file.type.includes('heif')));
+                     file.name.toLowerCase().endsWith('.heif');
 
       if (isHeic) {
-        logDebug('🍎 فایل HEIC — در حال تبدیل...');
+        logDebug('🍎 تبدیل HEIC...');
         try {
-          const convertedBlob = await heic2any({
-            blob: file,
-            toType: 'image/jpeg',
-            quality: 0.85
-          });
+          const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 });
           const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
           workingFile = new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
           logDebug('✅ HEIC تبدیل شد: ' + (workingFile.size/1024).toFixed(0) + 'KB');
-        } catch (heicErr) {
-          throw new Error('تبدیل HEIC ناموفق — عکس دیگه‌ای انتخاب کن');
+        } catch (e) {
+          logDebug('⚠️ تبدیل HEIC نشد');
         }
       }
 
-      // مرحله ۱: خوندن فایل با FileReader
-      logDebug('📖 خواندن فایل...');
-      const dataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error('خطا در خواندن فایل'));
-        reader.onabort = () => reject(new Error('خواندن لغو شد'));
-        reader.readAsDataURL(workingFile);
-      });
-      logDebug('✅ فایل خوانده شد');
+      // فشرده‌سازی
+      let finalBlob = workingFile;
+      try {
+        const compressed = await imageCompression(workingFile, {
+          maxWidthOrHeight: 1200,
+          maxSizeMB: 0.4,
+          useWebWorker: false,
+          fileType: 'image/jpeg'
+        });
+        finalBlob = compressed;
+        logDebug('🔄 فشرده: ' + (compressed.size/1024).toFixed(0) + 'KB');
+      } catch (e) {
+        logDebug('⚠️ فشرده نشد — ارسال مستقیم');
+      }
 
-      // مرحله ۲: تبدیل به JPEG با canvas
-      const jpegBlob = await new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-          try {
-            const canvas = document.createElement('canvas');
-            let w = img.naturalWidth || img.width;
-            let h = img.naturalHeight || img.height;
-            const maxDim = 1200;
-            if (w > maxDim || h > maxDim) {
-              if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-              else { w = Math.round(w * maxDim / h); h = maxDim; }
-            }
-            canvas.width = w;
-            canvas.height = h;
-            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            canvas.toBlob(
-              (blob) => blob ? resolve(blob) : reject(new Error('خطا در تبدیل عکس')),
-              'image/jpeg',
-              0.85
-            );
-          } catch (e) { reject(e); }
-        };
-        img.onerror = () => reject(new Error('این عکس قابل پردازش نیست'));
-        img.src = dataUrl;
-      });
-
-      logDebug('🔄 تبدیل شد: ' + (jpegBlob.size/1024).toFixed(0) + 'KB');
-
-      if (jpegBlob.size > 5 * 1024 * 1024) {
-        throw new Error('حجم عکس بیش از ۵ مگابایت است');
+      if (finalBlob.size > 5 * 1024 * 1024) {
+        throw new Error('حجم عکس بیش از ۵ مگابایت');
       }
 
       const fd = new FormData();
-      fd.append('image', jpegBlob, file.name.replace(/\.[^.]+$/, '') + '.jpg');
-      logDebug('📤 در حال ارسال (' + (jpegBlob.size/1024).toFixed(0) + 'KB)...');
+      fd.append('image', finalBlob, 'image.jpg');
+      logDebug('📤 ارسال...');
 
       const res = await fetch('/api/upload', { method: 'POST', body: fd });
-      logDebug('📡 پاسخ سرور: HTTP ' + res.status);
+      logDebug('📡 HTTP ' + res.status);
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || 'خطا در سرور');
+      if (!res.ok || !data.success) throw new Error(data.error || 'خطا');
 
-      uploadedImages.push({ url: data.url, key: data.key });
+      uploadedImages.push({ url: data.url, key: data.key, elId: id });
       item.classList.remove('uploading');
       item.classList.add('done');
       item.querySelector('.status').textContent = '✓ آماده';
-      logDebug('✅ آپلود موفق');
+      logDebug('✅ موفق');
     } catch (err) {
-      console.error('Upload error:', err);
+      console.error(err);
       item.classList.remove('uploading');
       item.classList.add('failed');
-      item.querySelector('.status').textContent = 'خطا';
-      const msg = err && err.message ? err.message : (err && err.type ? err.type : String(err));
+      item.querySelector('.status').textContent = '✗ خطا';
+      const msg = err && err.message ? err.message : String(err);
       logDebug('❌ ' + msg);
     }
   }
@@ -315,13 +514,8 @@ fileInput.addEventListener('change', async (e) => {
 function removePreview(id) {
   const item = document.getElementById(id);
   if (!item) return;
-  // اگه آپلود شده بود، از لیست حذف کن
-  const img = item.querySelector('img');
-  const idx = uploadedImages.findIndex(x => x.url && img.src.includes('') === false);
-  // ساده: هر عکسی که حذف شد، از uploadedImages پاک کن (با تطبیق ترتیب)
-  // راه دقیق‌تر: نگه‌داشتن key در data attribute
+  uploadedImages = uploadedImages.filter(x => x.elId !== id);
   item.remove();
-  // reset: بهتره کلیدها رو دوباره از روی DOM بسازیم؟ ساده‌تر: کل آپلود رو ادامه می‌دیم
 }
 
 function showMessage(text, type) {
@@ -356,19 +550,21 @@ form.addEventListener('submit', async (e) => {
     const result = await res.json();
 
     if (res.ok && result.success) {
-      showMessage('✅ ' + result.message + ' (شناسه: ' + result.id + ')', 'success');
+      showMessage('✅ ' + result.message, 'success');
       form.reset();
       uploadedImages = [];
       previews.innerHTML = '';
+      document.getElementById('debugLog').style.display = 'none';
+      // پرش به بالا
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       showMessage('❌ ' + (result.error || 'خطا در ثبت'), 'error');
     }
   } catch (err) {
     showMessage('❌ خطا در ارتباط با سرور', 'error');
-    console.error(err);
   } finally {
     btn.disabled = false;
-    btn.textContent = 'ثبت آگهی';
+    btn.textContent = '✓ ثبت آگهی';
   }
 });
 </script>
