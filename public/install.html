@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نصب اپلیکیشن | جمعه بازار خودرو رشت</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1e3a5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="جمعه بازار">
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #1e3a5f;
+    --primary-light: #2c5282;
+    --accent: #ffb703;
+    --success: #1e6b30;
+    --bg: #f5f6f8;
+    --text: #1a202c;
+    --text-muted: #64748b;
+    --border: #e5e7eb;
+  }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header .back-btn {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+  }
+  header h1 { font-size: 1rem; font-weight: 700; }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+
+  .hero-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    box-shadow: 0 10px 30px rgba(30,58,95,0.3);
+  }
+
+  h2 {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+  }
+
+  .platform-card {
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    text-decoration: none;
+    color: inherit;
+  }
+  .platform-card:active {
+    transform: scale(0.98);
+    border-color: var(--primary);
+  }
+  .platform-card .platform-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.8rem;
+  }
+  .platform-card.android .platform-icon {
+    background: #e8f5e9;
+  }
+  .platform-card.ios .platform-icon {
+    background: #e3f2fd;
+  }
+  .platform-info { flex: 1; }
+  .platform-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .platform-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .platform-arrow {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+  }
+
+  .platform-card.detected {
+    border-color: var(--accent);
+    background: #fffbeb;
+    position: relative;
+  }
+  .platform-card.detected::before {
+    content: 'پیشنهاد برای شما';
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    background: var(--accent);
+    color: var(--primary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 420px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .modal-header h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .modal-close {
+    width: 32px; height: 32px;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    background: var(--primary);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-text {
+    flex: 1;
+    font-size: 0.88rem;
+    color: #374151;
+    line-height: 1.7;
+    padding-top: 3px;
+  }
+  .step-text strong { color: var(--primary); }
+  .step-text .icon-inline {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #f1f5f9;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0 2px;
+  }
+
+  .note {
+    margin-top: 18px;
+    padding: 12px 14px;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    color: #78350f;
+    line-height: 1.7;
+  }
+
+  .btn-native-install {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 18px;
+    box-shadow: 0 4px 12px rgba(30,58,95,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-native-install:active { transform: scale(0.98); }
+
+  .success-msg {
+    text-align: center;
+    padding: 30px 20px;
+  }
+  .success-msg .big-icon {
+    font-size: 4rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .success-msg h3 {
+    font-size: 1.1rem;
+    color: var(--success);
+    margin-bottom: 8px;
+  }
+  .success-msg p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .info-box {
+    background: #f0f4f9;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: #475569;
+    line-height: 1.8;
+  }
+  .info-box strong { color: var(--primary); }
+
+  .ios-only { display: none; }
+  .android-only { display: none; }
+
+  body.is-ios .ios-only { display: block; }
+  body.is-android .android-only { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="back-btn">→</a>
+  <h1>نصب اپلیکیشن</h1>
+</header>
+
+<div class="container">
+  <div class="hero-icon">📱</div>
+  <h2>جمعه بازار خودرو رشت</h2>
+  <p class="subtitle">سایت رو مثل یه اپ روی گوشیت نصب کن</p>
+
+  <a class="platform-card android" id="androidCard" onclick="openInstall('android')">
+    <div class="platform-icon">🤖</div>
+    <div class="platform-info">
+      <div class="platform-title">اندروید</div>
+      <div class="platform-desc">نصب مستقیم از Chrome</div>
+    </div>
+    <div class="platform-arrow">←</div>
+  </a>
+
+  <a class="platform-card ios" id="iosCard" onclick="openInstall('ios')">
+    <div class="platform-icon">🍎</div>
+    <div class="platform-info">
+      <div class="platform-title">iOS (آیفون / آیپد)</div>
+      <div class="platform-desc">نصب از طریق Safari</div>
+    </div>
+    <div class="platform-arrow">←</div>
+  </a>
+
+  <div class="info-box">
+    💡 <strong>چرا نصب کنیم؟</strong><br>
+    دسترسی سریع از صفحه اصلی، باز شدن تمام‌صفحه، کارکرد بهتر و بدون نیاز به تایپ آدرس.
+  </div>
+</div>
+
+<!-- Modal نصب -->
+<div class="modal-overlay" id="installModal">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+// تشخیص پلتفرم
+const ua = navigator.userAgent.toLowerCase();
+const isIOS = /iphone|ipad|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isAndroid = /android/.test(ua);
+
+if (isIOS) document.body.classList.add('is-ios');
+if (isAndroid) document.body.classList.add('is-android');
+
+// هایلایت پلتفرم فعلی
+if (isIOS) document.getElementById('iosCard').classList.add('detected');
+if (isAndroid) document.getElementById('androidCard').classList.add('detected');
+
+// beforeinstallprompt برای اندروید
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+// بستن modal
+document.getElementById('installModal').addEventListener('click', (e) => {
+  if (e.target.id === 'installModal') closeModal();
+});
+
+function closeModal() {
+  document.getElementById('installModal').classList.remove('open');
+}
+
+function openInstall(platform) {
+  const modal = document.getElementById('installModal');
+  const content = document.getElementById('modalContent');
+
+  if (platform === 'android') {
+    content.innerHTML = `
+      <div class="modal-header">
+        <h3>🤖 نصب روی اندروید</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div id="androidContent">
+        ${deferredPrompt ? `
+          <p style="font-size:0.9rem;color:#475569;margin-bottom:16px;text-align:center;">
+            روی دکمه زیر بزن تا اپ نصب بشه
+          </p>
+          <button class="btn-native-install" onclick="triggerInstall()">
+            📥 نصب اپلیکیشن
+          </button>
+        ` : `
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">۱</div>
+              <div class="step-text">روی دکمه <span class="icon-inline">⋮</span> (سه نقطه بالا راست) بزن</div>
+            </div>
+            <div class="step">
+              <div class="step-num">۲</div>
+              <div class="step-text">گزینه <strong>Install app</strong> یا <strong>Add to Home screen</strong> رو انتخاب کن</div>
+            </div>
+            <div class="step">
+              <div class="step-num">۳</div>
+              <div class="step-text">تایید کن — آیکون اپ روی صفحه اصلی ظاهر می‌شه</div>
+            </div>
+          </div>
+          <div class="note">
+            ⚠️ اگه گزینه نصب رو نمی‌بینی، مطمئن شو با <strong>Chrome</strong> باز کردی و یه بار صفحه رو refresh کن.
+          </div>
+        `}
+      </div>
+    `;
+  } else if (platform === 'ios') {
+    content.innerHTML = `
+      <div class="modal-header">
+        <h3>🍎 نصب روی آیفون</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">۱</div>
+          <div class="step-text">مطمئن شو با <strong>Safari</strong> باز کردی (نه Chrome)</div>
+        </div>
+        <div class="step">
+          <div class="step-num">۲</div>
+          <div class="step-text">روی دکمه <strong>Share</strong> <span class="icon-inline">⬆️</span> پایین صفحه بزن</div>
+        </div>
+        <div class="step">
+          <div class="step-num">۳</div>
+          <div class="step-text">اسکرول کن و <strong>Add to Home Screen</strong> رو انتخاب کن</div>
+        </div>
+        <div class="step">
+          <div class="step-num">۴</div>
+          <div class="step-text">روی <strong>Add</strong> بزن — آیکون اپ روی صفحه اصلی ظاهر می‌شه</div>
+        </div>
+      </div>
+      <div class="note">
+        ⚠️ اپل اجازه نصب خودکار از دکمه رو نمی‌ده. مراحل بالا فقط ۱۰ ثانیه طول می‌کشه.
+      </div>
+    `;
+  }
+
+  modal.classList.add('open');
+}
+
+async function triggerInstall() {
+  if (!deferredPrompt) {
+    alert('امکان نصب خودکار نیست — از منوی مرورگر نصب کن');
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    document.getElementById('modalContent').innerHTML = `
+      <div class="success-msg">
+        <span class="big-icon">🎉</span>
+        <h3>اپ نصب شد!</h3>
+        <p>حالا آیکون «جمعه بازار» روی صفحه اصلی گوشیت هست</p>
+        <button class="btn-native-install" onclick="closeModal()" style="margin-top:20px;">باشه</button>
+      </div>
+    `;
+  }
+  deferredPrompt = null;
+}
+
+// ثبت service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
