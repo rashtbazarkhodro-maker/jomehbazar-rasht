@@ -593,7 +593,8 @@ fileInput.addEventListener('change', async (e) => {
       console.error(err);
       item.classList.remove('uploading');
       item.classList.add('failed');
-      const rawMsg = err && err.message ? err.message : 'UNKNOWN';\n      const code = rawMsg.split('|')[0].split(':')[0].trim();
+      const rawMsg = err && err.message ? err.message : 'UNKNOWN';
+      const code = rawMsg.split('|')[0].split(':')[0].trim();
       const friendlyMsg = getUploadErrorMessage(code);
       item.querySelector('.status').textContent = '✗ ' + friendlyMsg.slice(0, 30);
       logDebug('❌ ' + code + ' — ' + friendlyMsg);
