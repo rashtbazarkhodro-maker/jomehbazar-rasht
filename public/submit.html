@@ -403,8 +403,54 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic-to@1.0.0/dist/heic-to.min.js"></script>
 <script>
+// ─────────────────────────────────────────────────────────────
+// توابع کمکی برای تشخیص و تبدیل HEIC
+// ─────────────────────────────────────────────────────────────
+
+// تشخیص HEIC با Magic Bytes (نه پسوند فایل)
+// این روش فایل‌های .jpg که محتواشون HEIC هست رو هم می‌گیره
+async function isHeicByMagicBytes(file) {
+  try {
+    const buffer = await file.slice(0, 16).arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    if (bytes[4] !== 0x66 || bytes[5] !== 0x74 ||
+        bytes[6] !== 0x79 || bytes[7] !== 0x70) {
+      return false;
+    }
+    const brand = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
+    const heicBrands = ['heic', 'heix', 'hevc', 'hevx',
+                        'mif1', 'msf1', 'heim', 'heis',
+                        'hevm', 'hevs'];
+    return heicBrands.includes(brand);
+  } catch {
+    return false;
+  }
+}
+
+// تبدیل HEIC به JPEG با کتابخانه heic-to
+async function convertHeicToJpeg(file) {
+  const blob = await heicTo({
+    blob: file,
+    type: 'image/jpeg',
+    quality: 0.9
+  });
+  const newName = file.name.replace(/\.(heic|heif)$/i, '.jpg') || 'image.jpg';
+  return new File([blob], newName, { type: 'image/jpeg' });
+}
+
+// پیام خطای کاربرپسند
+function getUploadErrorMessage(code) {
+  const messages = {
+    'HEIC_CONVERSION_FAILED': 'این عکس HEIC قابل تبدیل نیست. لطفاً در تنظیمات دوربین، فرمت JPEG رو انتخاب کن.',
+    'FILE_TOO_LARGE': 'حجم عکس بعد از فشرده‌سازی هنوز زیاده. لطفاً عکس کوچک‌تری انتخاب کن.',
+    'NETWORK_ERROR': 'خطا در ارتباط با سرور. اتصال اینترنت خود را بررسی کن.',
+    'INVALID_IMAGE': 'فرمت این فایل تصویری پشتیبانی نمی‌شود.'
+  };
+  return messages[code] || 'خطای نامشخص در آپلود عکس';
+}
+
 const form = document.getElementById('carForm');
 const btn = document.getElementById('submitBtn');
 const message = document.getElementById('message');
@@ -452,38 +498,45 @@ fileInput.addEventListener('change', async (e) => {
       logDebug('📷 فایل: ' + file.name + ' — ' + (file.size/1024).toFixed(0) + 'KB');
 
       let workingFile = file;
-      const isHeic = file.name.toLowerCase().endsWith('.heic') ||
-                     file.name.toLowerCase().endsWith('.heif');
+
+      // ─── مرحله ۱: تشخیص HEIC با Magic Bytes ───
+      const isHeic = await isHeicByMagicBytes(file);
+      logDebug('🔍 تشخیص HEIC: ' + (isHeic ? 'بله' : 'خیر'));
 
       if (isHeic) {
-        logDebug('🍎 تبدیل HEIC...');
+        logDebug('🍎 تبدیل HEIC به JPEG...');
         try {
-          const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 });
-          const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
-          workingFile = new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+          workingFile = await convertHeicToJpeg(file);
           logDebug('✅ HEIC تبدیل شد: ' + (workingFile.size/1024).toFixed(0) + 'KB');
         } catch (e) {
-          logDebug('⚠️ تبدیل HEIC نشد');
+          console.error('HEIC conversion failed:', e);
+          logDebug('❌ تبدیل HEIC شکست خورد');
+          throw new Error('HEIC_CONVERSION_FAILED');
         }
       }
 
-      // فشرده‌سازی
+      // ─── مرحله ۲: Resize + Compress ───
       let finalBlob = workingFile;
       try {
         const compressed = await imageCompression(workingFile, {
           maxWidthOrHeight: 1200,
           maxSizeMB: 0.4,
-          useWebWorker: false,
-          fileType: 'image/jpeg'
+          useWebWorker: true,
+          fileType: 'image/jpeg',
+          initialQuality: 0.85,
+          onProgress: () => null
         });
         finalBlob = compressed;
-        logDebug('🔄 فشرده: ' + (compressed.size/1024).toFixed(0) + 'KB');
+        logDebug('🔄 فشرده شد: ' + (compressed.size/1024).toFixed(0) + 'KB');
       } catch (e) {
+        console.error('Compression failed:', e);
         logDebug('⚠️ فشرده نشد — ارسال مستقیم');
+        finalBlob = workingFile;
       }
 
+      // ─── مرحله ۳: چک نهایی حجم ───
       if (finalBlob.size > 5 * 1024 * 1024) {
-        throw new Error('حجم عکس بیش از ۵ مگابایت');
+        throw new Error('FILE_TOO_LARGE');
       }
 
       const fd = new FormData();
@@ -504,9 +557,11 @@ fileInput.addEventListener('change', async (e) => {
       console.error(err);
       item.classList.remove('uploading');
       item.classList.add('failed');
-      item.querySelector('.status').textContent = '✗ خطا';
-      const msg = err && err.message ? err.message : String(err);
-      logDebug('❌ ' + msg);
+      const code = err && err.message ? err.message : 'UNKNOWN';
+      const friendlyMsg = getUploadErrorMessage(code);
+      item.querySelector('.status').textContent = '✗ ' + friendlyMsg.slice(0, 30);
+      logDebug('❌ ' + code + ' — ' + friendlyMsg);
+      showMessage('❌ ' + friendlyMsg, 'error');
     }
   }
 });
