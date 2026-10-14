@@ -32,7 +32,7 @@
   .contact-buttons { display: flex; gap: 10px; margin-top: 14px; }
   .contact-buttons a { flex: 1; text-align: center; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.9rem; }
   .btn-call { background: #1e3a5f; color: white; }
-  .btn-wa { background: #25d366; color: white; }
+  .btn-insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; }
   .footer { text-align: center; padding: 20px; font-size: 0.75rem; color: #999; }
   .map-btn { display: block; text-align: center; padding: 14px; background: #f0f4f9; color: #1e3a5f; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 0.9rem; margin-top: 8px; }
   .loading { text-align: center; padding: 40px 20px; color: #999; font-size: 0.9rem; }
@@ -88,8 +88,7 @@ function render(s) {
 
   const phone1 = s.phone1 || '';
   const phone2 = s.phone2 || '';
-  const whatsapp = s.whatsapp || '';
-  const waLink = whatsapp ? `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}` : '#';
+  const instagram = s.instagram || '';
 
   document.getElementById('content').innerHTML = `
     <div class="card">
@@ -111,7 +110,7 @@ function render(s) {
       <div class="info-row">
         <div class="info-icon">📱</div>
         <div class="info-content">
-          <div class="info-label">تماس و واتساپ</div>
+          <div class="info-label">تماس</div>
           <div class="info-value"><a href="tel:${phone1}">${formatPhone(phone1)}</a></div>
         </div>
       </div>` : ''}
@@ -142,7 +141,7 @@ function render(s) {
 
       <div class="contact-buttons">
         ${phone1 ? `<a class="btn-call" href="tel:${phone1}">📞 تماس</a>` : ''}
-        ${whatsapp ? `<a class="btn-wa" href="${waLink}" target="_blank">واتساپ</a>` : ''}
+        ${instagram ? `<a class="btn-insta" href="${instagram}" target="_blank">📸 اینستاگرام</a>` : ''}
       </div>
     </div>
 

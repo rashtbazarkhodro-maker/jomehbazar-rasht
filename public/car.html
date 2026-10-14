@@ -300,10 +300,10 @@
     color: white;
     box-shadow: 0 4px 12px rgba(30,58,95,0.25);
   }
-  .btn-whatsapp {
-    background: #25d366;
+  .btn-instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     color: white;
-    box-shadow: 0 4px 12px rgba(37,211,102,0.3);
+    box-shadow: 0 4px 12px rgba(220,39,67,0.3);
   }
 
   .loading, .error {
@@ -334,7 +334,7 @@ const carId = params.get('id');
 const content = document.getElementById('content');
 
 let dealerPhone = '';
-let dealerWhatsapp = '';
+let dealerInstagram = '';
 
 async function loadDealerInfo() {
   try {
@@ -342,7 +342,7 @@ async function loadDealerInfo() {
     const data = await res.json();
     const s = data.settings || {};
     dealerPhone = s.phone1 || '';
-    dealerWhatsapp = s.whatsapp || '';
+    dealerInstagram = s.instagram || '';
   } catch (e) {}
 }
 
@@ -463,7 +463,7 @@ function renderCar(car) {
 
     <div class="contact-bar">
       <a class="btn-call" href="tel:${dealerPhone || '01333000000'}">📞 تماس با نمایشگاه</a>
-      <a class="btn-whatsapp" href="https://wa.me/${(dealerWhatsapp || '989111234567').replace(/[^0-9]/g, '')}" target="_blank">واتساپ</a>
+      <a class="btn-instagram" href="${dealerInstagram || '#'}" target="_blank">📸 اینستاگرام</a>
     </div>
   `;
 }
