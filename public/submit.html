@@ -334,6 +334,63 @@
     justify-content: center;
     font-weight: 300;
   }
+
+
+  /* استایل ویدیو */
+  .video-preview {
+    margin-top: 12px;
+  }
+  .video-item {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #1a202c;
+  }
+  .video-item video {
+    width: 100%;
+    max-height: 240px;
+    display: block;
+    background: #000;
+  }
+  .video-item .video-status {
+    padding: 8px 12px;
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: center;
+    background: rgba(30,58,95,0.9);
+  }
+  .video-item.done .video-status {
+    background: rgba(30,107,48,0.9);
+  }
+  .video-item.failed .video-status {
+    background: rgba(200,0,0,0.9);
+  }
+  .video-item .video-progress-bar {
+    height: 4px;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    width: 0%;
+    transition: width 0.2s ease;
+  }
+  .video-item .remove-video {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 30px;
+    height: 30px;
+    background: rgba(220,38,38,0.95);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    z-index: 2;
+  }
 </style>
 </head>
 <body>
@@ -512,6 +569,17 @@
         <div class="previews" id="previews"></div>
       </div>
 
+      <div class="field">
+        <label>ویدیوی خودرو <span class="optional">(اختیاری — حداکثر ۱ ویدیو، ۱۰۰ مگابایت)</span></label>
+        <div class="upload-area" id="videoUploadArea">
+          <span class="icon">🎬</span>
+          <div class="text">برای انتخاب ویدیو کلیک کن</div>
+          <div class="sub">MP4 / MOV — حداکثر ۱ دقیقه</div>
+        </div>
+        <input type="file" id="videoInput" accept="video/*">
+        <div class="video-preview" id="videoPreview"></div>
+      </div>
+
       <button type="submit" class="btn-submit" id="submitBtn">✓ ثبت آگهی</button>
     </form>
   </div>
@@ -610,6 +678,7 @@ const fileInput = document.getElementById('fileInput');
 const previews = document.getElementById('previews');
 
 let uploadedImages = [];
+let uploadedVideo = null;
 
 function logDebug(msg) {
   const box = document.getElementById('debugLog');
@@ -620,6 +689,129 @@ function logDebug(msg) {
 }
 
 uploadArea.addEventListener('click', () => fileInput.click());
+
+// ═══════════════════════════════════════════════════════════
+// آپلود ویدیو با Presigned URL مستقیم به B2
+// ═══════════════════════════════════════════════════════════
+const videoUploadArea = document.getElementById('videoUploadArea');
+const videoInput = document.getElementById('videoInput');
+const videoPreview = document.getElementById('videoPreview');
+
+videoUploadArea.addEventListener('click', () => videoInput.click());
+
+videoInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  videoInput.value = '';
+
+  // چک حجم
+  const MAX_SIZE = 100 * 1024 * 1024;
+  if (file.size > MAX_SIZE) {
+    showMessage('❌ حجم ویدیو بیش از ۱۰۰ مگابایت است', 'error');
+    return;
+  }
+
+  // چک نوع
+  if (!file.type.startsWith('video/')) {
+    showMessage('❌ فقط فایل ویدیو مجاز است', 'error');
+    return;
+  }
+
+  // اگه ویدیوی قبلی هست، حذفش کن
+  if (uploadedVideo) {
+    uploadedVideo = null;
+    videoPreview.innerHTML = '';
+  }
+
+  // ساخت پیش‌نمایش
+  const videoUrl = URL.createObjectURL(file);
+  videoPreview.innerHTML = `
+    <div class="video-item" id="videoItem">
+      <button type="button" class="remove-video" onclick="removeVideo()">×</button>
+      <video src="${videoUrl}" controls preload="metadata"></video>
+      <div class="video-progress-bar"></div>
+      <div class="video-status">۰٪</div>
+    </div>
+  `;
+
+  const videoItem = document.getElementById('videoItem');
+  const progressBar = videoItem.querySelector('.video-progress-bar');
+  const statusEl = videoItem.querySelector('.video-status');
+
+  try {
+    statusEl.textContent = 'در حال آماده‌سازی...';
+
+    // ─── گام ۱: گرفتن presigned URL از Worker ───
+    const presignRes = await fetch('/api/upload/video/presign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contentType: file.type,
+        size: file.size
+      })
+    });
+
+    const presignData = await presignRes.json();
+    if (!presignRes.ok || !presignData.success) {
+      throw new Error(presignData.error || 'خطا در دریافت لینک آپلود');
+    }
+
+    // ─── گام ۲: آپلود مستقیم به B2 با XHR ───
+    statusEl.textContent = '۰٪';
+
+    await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', presignData.uploadUrl);
+      xhr.setRequestHeader('Content-Type', file.type);
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          const faPercent = percent.toLocaleString('fa-IR');
+          statusEl.textContent = faPercent + '٪';
+          progressBar.style.width = percent + '%';
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve();
+        } else {
+          reject(new Error('خطا در آپلود: ' + xhr.status));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error('NETWORK_ERROR'));
+      xhr.timeout = 300000; // ۵ دقیقه
+      xhr.ontimeout = () => reject(new Error('زمان آپلود به پایان رسید'));
+
+      xhr.send(file);
+    });
+
+    // ─── موفق ───
+    uploadedVideo = {
+      url: presignData.publicUrl,
+      key: presignData.key
+    };
+
+    videoItem.classList.add('done');
+    statusEl.textContent = '✓ ویدیو آماده';
+    progressBar.style.width = '100%';
+    showMessage('✅ ویدیو با موفقیت آپلود شد', 'success');
+
+  } catch (err) {
+    console.error('Video upload error:', err);
+    videoItem.classList.add('failed');
+    statusEl.textContent = '✗ ' + (err.message || 'خطا در آپلود ویدیو');
+    showMessage('❌ ' + (err.message || 'خطا در آپلود ویدیو'), 'error');
+  }
+});
+
+function removeVideo() {
+  uploadedVideo = null;
+  videoPreview.innerHTML = '';
+}
+
 
 fileInput.addEventListener('change', async (e) => {
   const files = Array.from(e.target.files);
@@ -838,6 +1030,7 @@ form.addEventListener('submit', async (e) => {
   data.mileage = parseInt(data.mileage);
   data.price = parseInt(data.price);
   data.images = uploadedImages.map(x => x.url);
+  data.videos = uploadedVideo ? [uploadedVideo.url] : [];
 
   // فیلدهای ارزیابی (تبدیل نوع)
   if (data.insurance_months) data.insurance_months = parseInt(data.insurance_months);
@@ -856,6 +1049,8 @@ form.addEventListener('submit', async (e) => {
       form.reset();
       uploadedImages = [];
       previews.innerHTML = '';
+      uploadedVideo = null;
+      videoPreview.innerHTML = '';
       document.getElementById('debugLog').style.display = 'none';
       // پرش به بالا
       window.scrollTo({ top: 0, behavior: 'smooth' });
