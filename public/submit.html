@@ -316,7 +316,7 @@
     <div class="message" id="message"></div>
     <div id="debugLog"></div>
 
-    <form id="carForm">
+    <form id="carForm" novalidate>
 
       <div class="section-title"><span class="num">۱</span> اطلاعات پایه</div>
 
@@ -339,7 +339,7 @@
       <div class="row">
         <div class="field">
           <label>سال ساخت <span class="req">*</span></label>
-          <input type="number" name="year" required min="1370" max="1410" placeholder="1402">
+          <input type="number" name="year" required min="1300" max="2100" placeholder="مثلاً 1402 یا 2019">
         </div>
         <div class="field">
           <label>کارکرد (کیلومتر) <span class="req">*</span></label>
@@ -673,10 +673,46 @@ function showMessage(text, type) {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   message.className = 'message';
+
+  // ─── اعتبارسنجی با پیام فارسی ───
+  const formData = new FormData(form);
+  const errors = [];
+
+  const title = (formData.get('title') || '').trim();
+  if (!title) errors.push('عنوان آگهی');
+
+  const year = (formData.get('year') || '').trim();
+  if (!year) {
+    errors.push('سال ساخت');
+  } else {
+    const y = parseInt(year);
+    if (isNaN(y) || y < 1300 || y > 2100) {
+      errors.push('سال ساخت معتبر (بین ۱۳۰۰ تا ۱۴۱۰ شمسی یا ۱۹۰۰ تا ۲۱۰۰ میلادی)');
+    }
+  }
+
+  const mileage = (formData.get('mileage') || '').trim();
+  if (!mileage) errors.push('کارکرد (کیلومتر)');
+
+  const price = (formData.get('price') || '').trim();
+  if (!price) errors.push('قیمت');
+
+  const phone = (formData.get('phone') || '').trim();
+  if (!phone) {
+    errors.push('شماره تماس');
+  } else if (!/^09[0-9]{9}$/.test(phone)) {
+    errors.push('شماره تماس معتبر (۱۱ رقم با شروع ۰۹)');
+  }
+
+  if (errors.length > 0) {
+    showMessage('❌ لطفاً این فیلدها را کامل کن: ' + errors.join('، '), 'error');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = 'در حال ثبت...';
 
-  const formData = new FormData(form);
   const data = {};
   for (const [key, value] of formData.entries()) {
     if (key === 'images') continue;
