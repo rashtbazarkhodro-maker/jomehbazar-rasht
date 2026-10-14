@@ -425,7 +425,75 @@
         <textarea name="description" placeholder="وضعیت بدنه، بیمه، سایر جزئیات..."></textarea>
       </div>
 
-      <div class="section-title"><span class="num">۳</span> تماس و تصاویر</div>
+      <div class="section-title"><span class="num">۳</span> ارزیابی خودرو</div>
+
+      <div class="row">
+        <div class="field">
+          <label>وضعیت موتور</label>
+          <select name="engine_status">
+            <option value="">انتخاب کنید</option>
+            <option value="سالم">سالم</option>
+            <option value="نیاز به تعمیر جزئی">نیاز به تعمیر جزئی</option>
+            <option value="نیاز به تعمیر اساسی">نیاز به تعمیر اساسی</option>
+            <option value="تعمیر شده">تعمیر شده</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>وضعیت شاسی‌ها</label>
+          <select name="chassis_status">
+            <option value="">انتخاب کنید</option>
+            <option value="سالم و پلمپ">سالم و پلمپ</option>
+            <option value="رنگ شده">رنگ شده</option>
+            <option value="خط و خش جزئی">خط و خش جزئی</option>
+            <option value="صافکاری شده">صافکاری شده</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>وضعیت بدنه</label>
+          <select name="body_status">
+            <option value="">انتخاب کنید</option>
+            <option value="بدون رنگ">بدون رنگ</option>
+            <option value="خط و خش جزئی">خط و خش جزئی</option>
+            <option value="دور رنگ">دور رنگ</option>
+            <option value="چند لکه رنگ">چند لکه رنگ</option>
+            <option value="تصادفی">تصادفی</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>وضعیت گیربکس</label>
+          <select name="gearbox_status">
+            <option value="">انتخاب کنید</option>
+            <option value="سالم و پلمپ">سالم و پلمپ</option>
+            <option value="نیاز به تعمیر">نیاز به تعمیر</option>
+            <option value="تعمیر شده">تعمیر شده</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>مهلت بیمه شخص ثالث (ماه)</label>
+          <input type="number" name="insurance_months" min="0" max="12" placeholder="مثلاً 6">
+        </div>
+        <div class="field">
+          <label>بیمه بدنه</label>
+          <select name="has_body_insurance">
+            <option value="">انتخاب کنید</option>
+            <option value="1">دارد</option>
+            <option value="0">ندارد</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>سایر ویژگی‌ها و امکانات <span class="optional">(اختیاری)</span></label>
+        <textarea name="extra_features" placeholder="مثال: سانروف، صندلی برقی، دوربین دنده عقب، گرمکن صندلی"></textarea>
+      </div>
+
+      <div class="section-title"><span class="num">۴</span> تماس و تصاویر</div>
 
       <div class="field">
         <label>شماره تماس <span class="req">*</span></label>
@@ -770,6 +838,10 @@ form.addEventListener('submit', async (e) => {
   data.mileage = parseInt(data.mileage);
   data.price = parseInt(data.price);
   data.images = uploadedImages.map(x => x.url);
+
+  // فیلدهای ارزیابی (تبدیل نوع)
+  if (data.insurance_months) data.insurance_months = parseInt(data.insurance_months);
+  data.has_body_insurance = data.has_body_insurance === '1';
 
   try {
     const res = await fetch('/api/cars', {
