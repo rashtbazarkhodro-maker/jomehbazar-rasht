@@ -142,6 +142,46 @@ export default {
       }
     }
 
+    // ═══════════════════════════════════════════════════════
+    // MIGRATION ENDPOINT (موقت) — اضافه کردن فیلدهای ارزیابی
+    // ═══════════════════════════════════════════════════════
+    if (url.pathname === '/api/admin/migrate-evaluation' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        if (body.password !== env.ADMIN_PASSWORD) {
+          return Response.json({ error: 'دسترسی ندارید' }, { status: 401, headers: corsHeaders });
+        }
+
+        const columns = [
+          "ALTER TABLE cars ADD COLUMN engine_status TEXT",
+          "ALTER TABLE cars ADD COLUMN chassis_status TEXT",
+          "ALTER TABLE cars ADD COLUMN body_status TEXT",
+          "ALTER TABLE cars ADD COLUMN gearbox_status TEXT",
+          "ALTER TABLE cars ADD COLUMN insurance_months INTEGER",
+          "ALTER TABLE cars ADD COLUMN has_body_insurance INTEGER DEFAULT 0",
+          "ALTER TABLE cars ADD COLUMN extra_features TEXT",
+        ];
+
+        const results = [];
+        for (const sql of columns) {
+          try {
+            await env.DB.prepare(sql).run();
+            results.push({ sql, status: 'added' });
+          } catch (e) {
+            if (e.message && e.message.includes('duplicate column')) {
+              results.push({ sql, status: 'already_exists' });
+            } else {
+              results.push({ sql, status: 'error', error: e.message });
+            }
+          }
+        }
+
+        return Response.json({ success: true, results }, { headers: corsHeaders });
+      } catch (e) {
+        return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
+      }
+    }
+
     // ===== ثبت خودرو =====
     if (url.pathname === '/api/cars' && request.method === 'POST') {
       try {
@@ -154,13 +194,20 @@ export default {
         }
         const images = JSON.stringify(body.images || []);
         const result = await env.DB.prepare(
-          `INSERT INTO cars (title, brand, model, year, mileage, price, color, gearbox, fuel, description, images, phone, status)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`
+          `INSERT INTO cars (title, brand, model, year, mileage, price, color, gearbox, fuel, description, images, phone, status,
+                             engine_status, chassis_status, body_status, gearbox_status,
+                             insurance_months, has_body_insurance, extra_features)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?)`
         ).bind(
           body.title, body.brand || null, body.model || null,
           body.year, body.mileage, body.price,
           body.color || null, body.gearbox || null, body.fuel || null,
-          body.description || null, images, body.phone
+          body.description || null, images, body.phone,
+          body.engine_status || null, body.chassis_status || null,
+          body.body_status || null, body.gearbox_status || null,
+          body.insurance_months || null,
+          body.has_body_insurance ? 1 : 0,
+          body.extra_features || null
         ).run();
         return Response.json(
           { success: true, id: result.meta.last_row_id, message: 'آگهی ثبت شد و در انتظار تایید است' },
