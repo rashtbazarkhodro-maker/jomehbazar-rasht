@@ -585,6 +585,15 @@ fileInput.addEventListener('change', async (e) => {
       if (!res.ok || !data.success) throw new Error(data.error || 'خطا');
 
       uploadedImages.push({ url: data.url, key: data.key, elId: id });
+
+      // اگه HEIC بود، پیش‌نمایش رو با نسخه JPEG عوض کن
+      if (isHeic && workingFile !== file) {
+        const imgEl = item.querySelector('img');
+        if (imgEl) {
+          URL.revokeObjectURL(imgEl.src);
+          imgEl.src = URL.createObjectURL(workingFile);
+        }
+      }
       item.classList.remove('uploading');
       item.classList.add('done');
       item.querySelector('.status').textContent = '✓ آماده';
