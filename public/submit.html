@@ -196,7 +196,7 @@
     overflow: hidden;
     background: #e5e7eb;
   }
-  .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+  .preview-item img { width: 100%; height: 100%; object-fit: contain; background: #1a202c; cursor: zoom-in; }
   .preview-item .remove {
     position: absolute;
     top: 5px; left: 5px;
@@ -295,6 +295,44 @@
     direction: ltr;
     text-align: left;
     line-height: 1.6;
+  }
+
+
+  /* Lightbox برای نمایش تمام‌صفحه عکس */
+  .lightbox {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    cursor: zoom-out;
+  }
+  .lightbox.show { display: flex; }
+  .lightbox img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+  .lightbox .close-lb {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 44px;
+    height: 44px;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 300;
   }
 </style>
 </head>
@@ -532,8 +570,8 @@ fileInput.addEventListener('change', async (e) => {
     item.className = 'preview-item uploading';
     item.id = id;
     item.innerHTML = `
-      <img src="${URL.createObjectURL(file)}">
-      <button type="button" class="remove" onclick="removePreview('${id}')">×</button>
+      <img src="${URL.createObjectURL(file)}" onclick="openLightbox(this.src)">
+      <button type="button" class="remove" onclick="event.stopPropagation(); removePreview('${id}')">×</button>
       <div class="progress-bar"></div>
       <div class="status">۰٪</div>
     `;
@@ -657,6 +695,16 @@ fileInput.addEventListener('change', async (e) => {
   }
 });
 
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('show');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('show');
+  document.getElementById('lightboxImg').src = '';
+}
+
 function removePreview(id) {
   const item = document.getElementById(id);
   if (!item) return;
@@ -750,5 +798,10 @@ form.addEventListener('submit', async (e) => {
   }
 });
 </script>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="close-lb" onclick="closeLightbox()">×</button>
+  <img id="lightboxImg" src="" onclick="event.stopPropagation()">
+</div>
 </body>
 </html>
