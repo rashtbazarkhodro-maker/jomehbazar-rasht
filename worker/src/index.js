@@ -61,6 +61,55 @@ export default {
       }
     }
 
+    // ===== دریافت URL امن برای آپلود مستقیم ویدیو به B2 =====
+    if (url.pathname === '/api/upload/video/presign' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const contentType = body.contentType || 'video/mp4';
+        const size = body.size || 0;
+
+        // چک حجم (۱۰۰ مگابایت)
+        const MAX_SIZE = 100 * 1024 * 1024;
+        if (size > MAX_SIZE) {
+          return Response.json({ error: 'حجم ویدیو بیش از ۱۰۰ مگابایت است' }, { status: 400, headers: corsHeaders });
+        }
+
+        // چک نوع فایل
+        if (!contentType.startsWith('video/')) {
+          return Response.json({ error: 'فقط فایل ویدیو مجاز است' }, { status: 400, headers: corsHeaders });
+        }
+
+        // پسوند
+        const extMap = {
+          'video/mp4': 'mp4',
+          'video/quicktime': 'mov',
+          'video/webm': 'webm',
+          'video/3gpp': '3gp',
+          'video/x-matroska': 'mkv'
+        };
+        const ext = extMap[contentType] || 'mp4';
+
+        // کلید یکتا
+        const key = `cars/videos/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
+        const b2Url = `https://${env.B2_ENDPOINT}/${env.B2_BUCKET}/${key}`;
+
+        // ساخت presigned URL با aws4fetch
+        const signedReq = await b2.sign(
+          new Request(b2Url, { method: 'PUT' }),
+          { aws: { signQuery: true } }
+        );
+
+        return Response.json({
+          success: true,
+          uploadUrl: signedReq.url,
+          key: key,
+          publicUrl: '/api/images/' + key
+        }, { headers: corsHeaders });
+      } catch (e) {
+        return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
+      }
+    }
+
     // ===== آپلود عکس =====
     if (url.pathname === '/api/upload' && request.method === 'POST') {
       try {
@@ -160,6 +209,7 @@ export default {
           "ALTER TABLE cars ADD COLUMN insurance_months INTEGER",
           "ALTER TABLE cars ADD COLUMN has_body_insurance INTEGER DEFAULT 0",
           "ALTER TABLE cars ADD COLUMN extra_features TEXT",
+          "ALTER TABLE cars ADD COLUMN videos TEXT",
         ];
 
         const results = [];
@@ -193,11 +243,12 @@ export default {
           }
         }
         const images = JSON.stringify(body.images || []);
+        const videos = JSON.stringify(body.videos || []);
         const result = await env.DB.prepare(
           `INSERT INTO cars (title, brand, model, year, mileage, price, color, gearbox, fuel, description, images, phone, status,
                              engine_status, chassis_status, body_status, gearbox_status,
-                             insurance_months, has_body_insurance, extra_features)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?)`
+                             insurance_months, has_body_insurance, extra_features, videos)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?)`
         ).bind(
           body.title, body.brand || null, body.model || null,
           body.year, body.mileage, body.price,
@@ -207,7 +258,8 @@ export default {
           body.body_status || null, body.gearbox_status || null,
           body.insurance_months || null,
           body.has_body_insurance ? 1 : 0,
-          body.extra_features || null
+          body.extra_features || null,
+          videos
         ).run();
         return Response.json(
           { success: true, id: result.meta.last_row_id, message: 'آگهی ثبت شد و در انتظار تایید است' },
