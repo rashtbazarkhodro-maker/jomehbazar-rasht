@@ -225,6 +225,15 @@
     backdrop-filter: blur(4px);
     font-weight: 600;
   }
+  .preview-item .progress-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    width: 0%;
+    transition: width 0.2s ease;
+    border-radius: 0 2px 0 0;
+  }
   .preview-item.uploading { opacity: 0.7; }
   .preview-item.uploading .status { background: rgba(30,58,95,0.9); }
   .preview-item.done .status { background: rgba(30,107,48,0.9); }
@@ -525,7 +534,8 @@ fileInput.addEventListener('change', async (e) => {
     item.innerHTML = `
       <img src="${URL.createObjectURL(file)}">
       <button type="button" class="remove" onclick="removePreview('${id}')">×</button>
-      <div class="status">آپلود...</div>
+      <div class="progress-bar"></div>
+      <div class="status">۰٪</div>
     `;
     previews.appendChild(item);
 
@@ -579,10 +589,45 @@ fileInput.addEventListener('change', async (e) => {
       fd.append('image', finalBlob, 'image.jpg');
       logDebug('📤 ارسال...');
 
-      const res = await fetch('/api/upload', { method: 'POST', body: fd });
-      logDebug('📡 HTTP ' + res.status);
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || 'خطا');
+      // ─── آپلود با XMLHttpRequest برای دریافت درصد پیشرفت ───
+      const progressBar = item.querySelector('.progress-bar');
+      const statusEl = item.querySelector('.status');
+
+      const data = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/upload');
+
+        // به‌روزرسانی درصد
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            const faPercent = percent.toLocaleString('fa-IR');
+            statusEl.textContent = faPercent + '٪';
+            progressBar.style.width = percent + '%';
+            if (percent % 20 === 0) logDebug('📤 ' + percent + '٪');
+          }
+        };
+
+        xhr.onload = () => {
+          logDebug('📡 HTTP ' + xhr.status);
+          try {
+            const json = JSON.parse(xhr.responseText);
+            if (xhr.status >= 200 && xhr.status < 300 && json.success) {
+              resolve(json);
+            } else {
+              reject(new Error(json.error || 'خطا'));
+            }
+          } catch (e) {
+            reject(new Error('پاسخ نامعتبر از سرور'));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error('NETWORK_ERROR'));
+        xhr.ontimeout = () => reject(new Error('NETWORK_ERROR'));
+        xhr.timeout = 60000; // ۶۰ ثانیه
+
+        xhr.send(fd);
+      });
 
       uploadedImages.push({ url: data.url, key: data.key, elId: id });
 
