@@ -403,6 +403,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/heic-to@1.0.0/dist/heic-to.min.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────
@@ -431,13 +432,48 @@ async function isHeicByMagicBytes(file) {
 
 // تبدیل HEIC به JPEG با کتابخانه heic-to
 async function convertHeicToJpeg(file) {
-  const blob = await heicTo({
-    blob: file,
-    type: 'image/jpeg',
-    quality: 0.9
-  });
-  const newName = file.name.replace(/\.(heic|heif)$/i, '.jpg') || 'image.jpg';
-  return new File([blob], newName, { type: 'image/jpeg' });
+  const errors = [];
+
+  // ─── تلاش ۱: heic-to ───
+  const heicToFn = (typeof heicTo === 'function') ? heicTo
+                 : (typeof HeicTo !== 'undefined' && typeof HeicTo.heicTo === 'function') ? HeicTo.heicTo
+                 : null;
+
+  if (heicToFn) {
+    try {
+      console.log('[HEIC] Trying heic-to...');
+      const blob = await heicToFn({ blob: file, type: 'image/jpeg', quality: 0.9 });
+      console.log('[HEIC] ✅ heic-to succeeded');
+      const newName = file.name.replace(/\.(heic|heif)$/i, '.jpg') || 'image.jpg';
+      return new File([blob], newName, { type: 'image/jpeg' });
+    } catch (e) {
+      console.warn('[HEIC] heic-to failed:', e);
+      errors.push('heic-to: ' + (e && e.message ? e.message : String(e)));
+    }
+  } else {
+    errors.push('heic-to: not loaded');
+  }
+
+  // ─── تلاش ۲: heic2any ───
+  if (typeof heic2any === 'function') {
+    try {
+      console.log('[HEIC] Trying heic2any...');
+      const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 });
+      const blob = Array.isArray(converted) ? converted[0] : converted;
+      console.log('[HEIC] ✅ heic2any succeeded');
+      const newName = file.name.replace(/\.(heic|heif)$/i, '.jpg') || 'image.jpg';
+      return new File([blob], newName, { type: 'image/jpeg' });
+    } catch (e) {
+      console.warn('[HEIC] heic2any failed:', e);
+      errors.push('heic2any: ' + (e && e.message ? e.message : String(e)));
+    }
+  } else {
+    errors.push('heic2any: not loaded');
+  }
+
+  // ─── هر دو شکست خوردن ───
+  console.error('[HEIC] All converters failed:', errors);
+  throw new Error('HEIC_CONVERSION_FAILED | ' + errors.join(' | '));
 }
 
 // پیام خطای کاربرپسند
@@ -557,7 +593,7 @@ fileInput.addEventListener('change', async (e) => {
       console.error(err);
       item.classList.remove('uploading');
       item.classList.add('failed');
-      const code = err && err.message ? err.message : 'UNKNOWN';
+      const rawMsg = err && err.message ? err.message : 'UNKNOWN';\n      const code = rawMsg.split('|')[0].split(':')[0].trim();
       const friendlyMsg = getUploadErrorMessage(code);
       item.querySelector('.status').textContent = '✗ ' + friendlyMsg.slice(0, 30);
       logDebug('❌ ' + code + ' — ' + friendlyMsg);
