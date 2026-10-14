@@ -333,6 +333,19 @@ const params = new URLSearchParams(window.location.search);
 const carId = params.get('id');
 const content = document.getElementById('content');
 
+let dealerPhone = '';
+let dealerWhatsapp = '';
+
+async function loadDealerInfo() {
+  try {
+    const res = await fetch('/api/settings');
+    const data = await res.json();
+    const s = data.settings || {};
+    dealerPhone = s.phone1 || '';
+    dealerWhatsapp = s.whatsapp || '';
+  } catch (e) {}
+}
+
 function formatPrice(n) {
   return (n || 0).toLocaleString('fa-IR');
 }
@@ -345,6 +358,7 @@ async function loadCar() {
     content.innerHTML = '<div class="error"><span class="icon">⚠️</span>شناسه خودرو مشخص نیست</div>';
     return;
   }
+  await loadDealerInfo();
   try {
     const res = await fetch('/api/cars/' + carId);
     const data = await res.json();
@@ -448,8 +462,8 @@ function renderCar(car) {
     </div>
 
     <div class="contact-bar">
-      <a class="btn-call" href="tel:${car.phone || '01333000000'}">📞 تماس</a>
-      <a class="btn-whatsapp" href="https://wa.me/${(car.phone || '989111234567').replace(/^0/, '98')}" target="_blank">واتساپ</a>
+      <a class="btn-call" href="tel:${dealerPhone || '01333000000'}">📞 تماس با نمایشگاه</a>
+      <a class="btn-whatsapp" href="https://wa.me/${(dealerWhatsapp || '989111234567').replace(/[^0-9]/g, '')}" target="_blank">واتساپ</a>
     </div>
   `;
 }
