@@ -355,6 +355,66 @@
     justify-content: center;
     font-weight: 300;
   }
+
+
+  /* بخش ارزیابی فروشنده */
+  .eval-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 20px 0 12px;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .eval-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .eval-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 4px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .eval-row:last-child { border-bottom: none; }
+  .eval-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    color: #64748b;
+  }
+  .eval-label .eval-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #22c55e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #22c55e;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .eval-value {
+    font-size: 0.88rem;
+    color: #1a202c;
+    font-weight: 500;
+  }
+  .extra-features {
+    margin-top: 12px;
+    padding: 14px;
+    background: rgba(30,58,95,0.04);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: #334155;
+    white-space: pre-wrap;
+  }
 </style>
 </head>
 <body>
@@ -449,6 +509,45 @@ function renderCar(car) {
   if (daysOld < 3) badges.push('<span class="info-badge success">🆕 جدید</span>');
   if (car.gearbox === 'اتوماتیک') badges.push('<span class="info-badge">⚙️ اتوماتیک</span>');
 
+  // ─── ساخت بخش ارزیابی ───
+  const evalRows = [];
+  if (car.engine_status) {
+    evalRows.push({ label: 'موتور', value: car.engine_status });
+  }
+  if (car.chassis_status) {
+    evalRows.push({ label: 'وضعیت شاسی‌ها', value: car.chassis_status });
+  }
+  if (car.body_status) {
+    evalRows.push({ label: 'بدنه', value: car.body_status });
+  }
+  if (car.gearbox_status) {
+    evalRows.push({ label: 'گیربکس', value: car.gearbox_status });
+  }
+  if (car.insurance_months != null && car.insurance_months !== '') {
+    evalRows.push({ label: 'مهلت بیمه شخص ثالث', value: formatNum(car.insurance_months) + ' ماه' });
+  }
+  if (car.has_body_insurance) {
+    evalRows.push({ label: 'بیمه بدنه', value: 'دارد' });
+  }
+
+  let evalHtml = '';
+  if (evalRows.length > 0) {
+    evalHtml = `
+      <div class="eval-title">🏆 ارزیابی فروشنده</div>
+      <div class="eval-list">
+        ${evalRows.map(r => `
+          <div class="eval-row">
+            <div class="eval-label">
+              <span class="eval-check">✓</span>
+              <span>${r.label}</span>
+            </div>
+            <div class="eval-value">${r.value}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
   const thumbsHtml = carImages.length > 1
     ? '<div class="thumbs">' + carImages.map((img, i) =>
         `<img src="${img}" data-idx="${i}" class="${i===0?'active':''}" onclick="changeImage(${i})">`
@@ -486,6 +585,13 @@ function renderCar(car) {
           </div>
         `).join('')}
       </div>
+
+      ${evalHtml}
+
+      ${car.extra_features ? `
+        <div class="eval-title">✨ سایر ویژگی‌ها و امکانات</div>
+        <div class="extra-features">${car.extra_features}</div>
+      ` : ''}
     </div>
 
     ${car.description ? `
